@@ -875,11 +875,19 @@ export interface ErrorPatternItem {
   }>;
 }
 
+export interface AIInsight {
+  type: 'misconception' | 'strength' | 'pattern' | 'recommendation';
+  insight: string;
+  confidence: 'high' | 'medium' | 'low';
+  suggestedAction?: string;
+}
+
 export interface WeaknessesResponse {
   childId: string;
   weakConcepts: WeaknessItem[];
   errorPatterns: ErrorPatternItem[];
   insights: string[];
+  aiInsights?: AIInsight[];
   summary: string;
 }
 

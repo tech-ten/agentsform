@@ -296,7 +296,7 @@ function AnalyticsContent() {
         <section className="mb-12">
           <h2 className="text-xs uppercase tracking-wide text-neutral-400 mb-4">Insights</h2>
           <div className="space-y-4">
-            {weaknesses.aiInsights.map((insight: any, idx: number) => (
+            {weaknesses.aiInsights.map((insight, idx) => (
               <div key={idx} className="border-l-2 border-neutral-200 pl-4">
                 <p className="text-sm">{insight.insight}</p>
                 {insight.suggestedAction && (
