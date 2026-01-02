@@ -350,7 +350,10 @@ function AnalyticsContent() {
                     style={{ width: `${concept.masteryScore}%` }}
                   />
                 </div>
-                <span className="text-sm text-neutral-400 w-12 text-right">{concept.masteryScore}%</span>
+                <span className="text-sm text-neutral-400 w-20 text-right">
+                  {concept.masteryScore}%
+                  <span className="text-[10px] ml-1">({concept.correctAttempts}/{concept.totalAttempts})</span>
+                </span>
               </div>
             ))}
           </div>
