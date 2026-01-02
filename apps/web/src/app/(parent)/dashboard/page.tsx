@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getChildren, getProgress, getSubscriptionStatus, type Child, type SubscriptionStatus } from '@/lib/api'
+import { getChildren, getProgress, getSubscriptionStatus, getCustomerPortalUrl, type Child, type SubscriptionStatus } from '@/lib/api'
 import { isAuthenticatedSync, setSelectedChild, signOut } from '@/lib/auth'
 
 interface ChildProgress {
@@ -90,6 +90,16 @@ export default function DashboardPage() {
     signOut()
   }
 
+  const handleManageSubscription = async () => {
+    try {
+      const { url } = await getCustomerPortalUrl()
+      window.location.href = url
+    } catch (err) {
+      console.error('Failed to open billing portal:', err)
+      alert('Unable to open billing portal. Please try again.')
+    }
+  }
+
   const selectedProgress = progressData[selectedChild] || []
   const selectedChildData = children.find(c => c.id === selectedChild)
 
@@ -110,9 +120,19 @@ export default function DashboardPage() {
               </Link>
             )}
             {subscription && subscription.tier !== 'free' && (
-              <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full capitalize">
-                {subscription.tier}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full capitalize">
+                  {subscription.tier}
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-full text-xs"
+                  onClick={handleManageSubscription}
+                >
+                  Manage
+                </Button>
+              </div>
             )}
             <Link href="/children/add">
               <Button size="sm" className="rounded-full">Add Child</Button>

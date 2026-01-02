@@ -47,7 +47,9 @@ export class ApiStack extends cdk.Stack {
       },
     });
 
-    // Shared Lambda layer for common code
+    // Shared Lambda environment variables
+    // IMPORTANT: Run `source .env` before `npx cdk deploy` to load API keys
+    // Keys are stored in .env (gitignored) - see .env.example for format
     const commonEnv = {
       TABLE_NAME: table.tableName,
       USER_POOL_ID: userPool.userPoolId,

@@ -116,9 +116,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
           const session = stripeEvent.data.object as Stripe.Checkout.Session;
           const userId = session.metadata?.userId;
           const plan = session.metadata?.plan;
+          const customerId = session.customer as string;
 
           if (userId && plan) {
-            await updateUserTier(userId, plan, session.subscription as string);
+            await updateUserTier(userId, plan, session.subscription as string, customerId);
           }
           break;
         }
@@ -126,6 +127,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         case 'customer.subscription.updated': {
           const subscription = stripeEvent.data.object as Stripe.Subscription;
           const userId = subscription.metadata?.userId;
+          const customerId = subscription.customer as string;
 
           if (userId) {
             const plan = subscription.items.data[0]?.price.id === PRICE_IDS.achiever ? 'achiever' : 'scholar';
@@ -133,9 +135,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
             // Active or trialing subscriptions get the paid tier
             if (status === 'active' || status === 'trialing') {
-              await updateUserTier(userId, plan, subscription.id);
+              await updateUserTier(userId, plan, subscription.id, customerId);
             } else if (status === 'canceled' || status === 'unpaid') {
-              await updateUserTier(userId, 'free', null);
+              await updateUserTier(userId, 'free', null, null);
             }
           }
           break;
@@ -146,7 +148,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
           const userId = subscription.metadata?.userId;
 
           if (userId) {
-            await updateUserTier(userId, 'free', null);
+            // Keep customerId so user can re-subscribe through portal
+            await updateUserTier(userId, 'free', null, null);
           }
           break;
         }
@@ -213,17 +216,32 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   }
 }
 
-async function updateUserTier(userId: string, tier: string, subscriptionId: string | null): Promise<void> {
+async function updateUserTier(
+  userId: string,
+  tier: string,
+  subscriptionId: string | null,
+  customerId: string | null
+): Promise<void> {
+  // Build update expression dynamically to only update customerId if provided
+  let updateExpr = 'SET tier = :tier, stripeSubscriptionId = :subId, updatedAt = :now';
+  const exprValues: Record<string, unknown> = {
+    ':tier': tier,
+    ':subId': subscriptionId,
+    ':now': new Date().toISOString(),
+  };
+
+  // Only update customerId if provided (don't overwrite with null on subscription delete)
+  if (customerId) {
+    updateExpr += ', stripeCustomerId = :custId';
+    exprValues[':custId'] = customerId;
+  }
+
   await db.send(new UpdateCommand({
     TableName: TABLE_NAME,
     Key: { PK: `USER#${userId}`, SK: 'PROFILE' },
-    UpdateExpression: 'SET tier = :tier, stripeSubscriptionId = :subId, updatedAt = :now',
-    ExpressionAttributeValues: {
-      ':tier': tier,
-      ':subId': subscriptionId,
-      ':now': new Date().toISOString(),
-    },
+    UpdateExpression: updateExpr,
+    ExpressionAttributeValues: exprValues,
   }));
 
-  console.log(`Updated user ${userId} to tier ${tier}`);
+  console.log(`Updated user ${userId} to tier ${tier}${customerId ? ` with customer ${customerId}` : ''}`);
 }
