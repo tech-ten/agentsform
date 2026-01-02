@@ -3,28 +3,34 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { isAuthenticatedSync, signOut } from '@/lib/auth'
 import {
   getAdminStats,
   getAdminUsers,
   getAdminChildren,
   getAdminAILogs,
   getAdminUsageByDay,
+  getAdminPayments,
+  getAdminKey,
+  setAdminKey,
+  clearAdminKey,
   type AdminStats,
   type AdminUser,
   type AdminChild,
   type AILog,
   type UsageByDay,
+  type AdminPayment,
+  type AdminSubscription,
+  type PaymentSummary,
 } from '@/lib/api'
 
-type Tab = 'overview' | 'users' | 'children' | 'ai-logs'
+type Tab = 'overview' | 'users' | 'children' | 'ai-logs' | 'payments'
 
 export default function AdminDashboard() {
-  const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [adminKeyInput, setAdminKeyInput] = useState('')
 
   // Data states
   const [stats, setStats] = useState<AdminStats | null>(null)
@@ -32,26 +38,33 @@ export default function AdminDashboard() {
   const [children, setChildren] = useState<AdminChild[]>([])
   const [aiLogs, setAILogs] = useState<AILog[]>([])
   const [usageByDay, setUsageByDay] = useState<UsageByDay[]>([])
+  const [payments, setPayments] = useState<AdminPayment[]>([])
+  const [subscriptions, setSubscriptions] = useState<AdminSubscription[]>([])
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null)
 
   useEffect(() => {
-    if (!isAuthenticatedSync()) {
-      router.push('/login')
-      return
+    // Check if we have an admin key stored
+    const storedKey = getAdminKey()
+    if (storedKey) {
+      setIsAuthenticated(true)
+      loadData()
+    } else {
+      setLoading(false)
     }
-    loadData()
-  }, [router])
+  }, [])
 
   const loadData = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      const [statsRes, usersRes, childrenRes, logsRes, usageRes] = await Promise.all([
+      const [statsRes, usersRes, childrenRes, logsRes, usageRes, paymentsRes] = await Promise.all([
         getAdminStats(),
         getAdminUsers(),
         getAdminChildren(),
         getAdminAILogs(100),
         getAdminUsageByDay(),
+        getAdminPayments(),
       ])
 
       setStats(statsRes)
@@ -59,6 +72,9 @@ export default function AdminDashboard() {
       setChildren(childrenRes.children)
       setAILogs(logsRes.logs)
       setUsageByDay(usageRes.days)
+      setPayments(paymentsRes.payments)
+      setSubscriptions(paymentsRes.subscriptions)
+      setPaymentSummary(paymentsRes.summary)
     } catch (err) {
       console.error('Failed to load admin data:', err)
       setError(err instanceof Error ? err.message : 'Failed to load data. You may not have admin access.')
@@ -67,8 +83,35 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    setAdminKey(adminKeyInput)
+
+    try {
+      // Try to load data with the provided key
+      await getAdminStats()
+      setIsAuthenticated(true)
+      loadData()
+    } catch (err) {
+      clearAdminKey()
+      setError('Invalid admin key')
+      setLoading(false)
+    }
+  }
+
   const handleLogout = () => {
-    signOut()
+    clearAdminKey()
+    setIsAuthenticated(false)
+    setStats(null)
+    setUsers([])
+    setChildren([])
+    setAILogs([])
+    setUsageByDay([])
+    setPayments([])
+    setSubscriptions([])
+    setPaymentSummary(null)
   }
 
   const formatDate = (dateStr: string) => {
@@ -82,23 +125,67 @@ export default function AdminDashboard() {
 
   const maxUsage = Math.max(...usageByDay.map(d => d.count), 1)
 
+  // Admin login form
+  if (!isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-full max-w-md p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-semibold mb-2">AgentsForm Admin</h1>
+            <p className="text-neutral-500">Enter your admin key to access the dashboard</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="p-4 border border-red-200 rounded-xl bg-red-50 text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="adminKey" className="block text-sm font-medium mb-2">
+                Admin Key
+              </label>
+              <input
+                id="adminKey"
+                type="password"
+                value={adminKeyInput}
+                onChange={(e) => setAdminKeyInput(e.target.value)}
+                className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="Enter admin key..."
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full rounded-full"
+              disabled={loading}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <Link href="/" className="text-sm text-neutral-500 hover:text-black">
+              ← Back to StudyMate
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100">
         <div className="max-w-7xl mx-auto px-6 h-14 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-lg font-semibold">
-              StudyMate
-            </Link>
-            <span className="text-sm text-neutral-400">Admin</span>
+            <span className="text-lg font-semibold">AgentsForm</span>
+            <span className="text-sm text-neutral-400">Admin Dashboard</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm" className="rounded-full">
-                Main Dashboard
-              </Button>
-            </Link>
             <button
               onClick={handleLogout}
               className="text-sm text-neutral-500 hover:text-black transition-colors"
@@ -129,12 +216,12 @@ export default function AdminDashboard() {
         ) : (
           <>
             {/* Tabs */}
-            <div className="flex gap-2 mb-8 border-b border-neutral-200 pb-4">
-              {(['overview', 'users', 'children', 'ai-logs'] as Tab[]).map((tab) => (
+            <div className="flex gap-2 mb-8 border-b border-neutral-200 pb-4 overflow-x-auto">
+              {(['overview', 'users', 'children', 'ai-logs', 'payments'] as Tab[]).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
                     activeTab === tab
                       ? 'bg-black text-white'
                       : 'text-neutral-600 hover:bg-neutral-100'
@@ -144,6 +231,7 @@ export default function AdminDashboard() {
                   {tab === 'users' && `Users (${users.length})`}
                   {tab === 'children' && `Children (${children.length})`}
                   {tab === 'ai-logs' && `AI Logs (${aiLogs.length})`}
+                  {tab === 'payments' && `Payments (${payments.length})`}
                 </button>
               ))}
             </div>
@@ -332,6 +420,209 @@ export default function AdminDashboard() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {/* Payments Tab */}
+            {activeTab === 'payments' && (
+              <div className="space-y-8">
+                {/* Payment Summary */}
+                {paymentSummary && (
+                  <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                    <div className="p-6 border border-neutral-200 rounded-2xl">
+                      <div className="text-sm text-neutral-500 mb-1">Total Revenue</div>
+                      <div className="text-2xl font-semibold text-green-600">
+                        ${paymentSummary.totalRevenue.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="p-6 border border-neutral-200 rounded-2xl">
+                      <div className="text-sm text-neutral-500 mb-1">Payments</div>
+                      <div className="text-2xl font-semibold">{paymentSummary.successfulPayments}</div>
+                    </div>
+                    <div className="p-6 border border-neutral-200 rounded-2xl">
+                      <div className="text-sm text-neutral-500 mb-1">Active Subs</div>
+                      <div className="text-2xl font-semibold text-blue-600">{paymentSummary.activeSubscriptions}</div>
+                    </div>
+                    <div className="p-6 border border-neutral-200 rounded-2xl">
+                      <div className="text-sm text-neutral-500 mb-1">Canceled</div>
+                      <div className="text-2xl font-semibold text-neutral-400">{paymentSummary.canceledSubscriptions}</div>
+                    </div>
+                    <div className="p-6 border border-neutral-200 rounded-2xl">
+                      <div className="text-sm text-neutral-500 mb-1">Customers</div>
+                      <div className="text-2xl font-semibold">{paymentSummary.totalCustomers}</div>
+                    </div>
+                    <div className="p-6 border border-neutral-200 rounded-2xl">
+                      <div className="text-sm text-neutral-500 mb-1">Stripe Dashboard</div>
+                      <a
+                        href="https://dashboard.stripe.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 text-sm hover:underline"
+                      >
+                        Open Stripe →
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Subscriptions */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Active Subscriptions</h3>
+                  <div className="border border-neutral-200 rounded-2xl overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-neutral-50">
+                        <tr>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Customer</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Plan</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Amount</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Status</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Period End</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {subscriptions.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-8 text-center text-neutral-400">
+                              No subscriptions yet
+                            </td>
+                          </tr>
+                        ) : (
+                          subscriptions.map((sub) => (
+                            <tr key={sub.id} className="border-t border-neutral-100">
+                              <td className="px-4 py-3 text-sm">
+                                {sub.customerEmail || sub.customerId.substring(0, 12)}
+                              </td>
+                              <td className="px-4 py-3 text-sm font-medium">{sub.plan}</td>
+                              <td className="px-4 py-3 text-sm">
+                                ${sub.amount}/{sub.interval}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                  sub.status === 'active'
+                                    ? 'bg-green-100 text-green-700'
+                                    : sub.status === 'canceled'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                  {sub.status}
+                                  {sub.cancelAtPeriodEnd && ' (canceling)'}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-sm text-neutral-400">
+                                {formatDate(sub.currentPeriodEnd)}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Payments */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Payment History</h3>
+                  <div className="border border-neutral-200 rounded-2xl overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-neutral-50">
+                        <tr>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Customer</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Amount</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Status</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Date</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Receipt</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payments.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-8 text-center text-neutral-400">
+                              No payments yet
+                            </td>
+                          </tr>
+                        ) : (
+                          payments.map((payment) => (
+                            <tr key={payment.id} className="border-t border-neutral-100">
+                              <td className="px-4 py-3 text-sm">
+                                {payment.customerEmail || payment.customerId?.substring(0, 12) || '-'}
+                              </td>
+                              <td className="px-4 py-3 text-sm font-medium">
+                                ${payment.amount.toFixed(2)} {payment.currency}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                  payment.status === 'succeeded'
+                                    ? 'bg-green-100 text-green-700'
+                                    : payment.status === 'failed'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                  {payment.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-sm text-neutral-400">
+                                {formatDate(payment.created)}
+                              </td>
+                              <td className="px-4 py-3 text-sm">
+                                {payment.receiptUrl ? (
+                                  <a
+                                    href={payment.receiptUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline"
+                                  >
+                                    View
+                                  </a>
+                                ) : (
+                                  '-'
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Free Users Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">All Users by Tier</h3>
+                  <div className="border border-neutral-200 rounded-2xl overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-neutral-50">
+                        <tr>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Email</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Tier</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">AI Calls Today</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Billing</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.map((user) => (
+                          <tr key={user.id} className="border-t border-neutral-100">
+                            <td className="px-4 py-3 text-sm">{user.email || '-'}</td>
+                            <td className="px-4 py-3">
+                              <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                user.tier === 'achiever'
+                                  ? 'bg-purple-100 text-purple-700'
+                                  : user.tier === 'scholar'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-neutral-100 text-neutral-600'
+                              }`}>
+                                {user.tier || 'free'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm">{user.aiCallsToday}</td>
+                            <td className="px-4 py-3 text-sm text-neutral-400">
+                              {user.tier === 'free' || !user.tier ? '$0.00' : 'See subscription'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             )}
 

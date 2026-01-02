@@ -1,22 +1,24 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
-import { db, TABLE_NAME, getUserIdFromEvent } from '../lib/db';
+import { db, TABLE_NAME } from '../lib/db';
 import { success, badRequest, forbidden, serverError } from '../lib/response';
+import Stripe from 'stripe';
 
-// Admin user IDs (add your user ID here)
-const ADMIN_USERS = [
-  '198e94a8-4021-7046-dc39-0f89f839d1ac', // Tendai's user ID
-];
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
 
-function isAdmin(userId: string): boolean {
-  return ADMIN_USERS.includes(userId);
+// Admin API key - set via environment variable
+// This decouples admin access from parent Cognito accounts
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || 'studymate-admin-2024';
+
+function validateAdminAccess(event: APIGatewayProxyEventV2): boolean {
+  // Check for X-Admin-Key header
+  const adminKey = event.headers['x-admin-key'] || event.headers['X-Admin-Key'];
+  return adminKey === ADMIN_API_KEY;
 }
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> {
   try {
-    const userId = getUserIdFromEvent(event);
-
-    if (!userId || !isAdmin(userId)) {
+    if (!validateAdminAccess(event)) {
       return forbidden('Admin access required');
     }
 
@@ -189,6 +191,104 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       }
 
       return success({ days: days.reverse() });
+    }
+
+    // GET /admin/payments - List all payments and subscriptions from Stripe
+    if (path === '/admin/payments') {
+      try {
+        // Fetch recent payments (charges)
+        const charges = await stripe.charges.list({
+          limit: 100,
+        });
+
+        // Fetch all subscriptions
+        const subscriptions = await stripe.subscriptions.list({
+          limit: 100,
+          status: 'all',
+        });
+
+        // Fetch all customers
+        const customers = await stripe.customers.list({
+          limit: 100,
+        });
+
+        // Map customers by ID for quick lookup
+        const customerMap = new Map(
+          customers.data.map(c => [c.id, c])
+        );
+
+        // Format payments
+        const payments = charges.data.map(charge => ({
+          id: charge.id,
+          amount: charge.amount / 100,
+          currency: charge.currency.toUpperCase(),
+          status: charge.status,
+          customerId: charge.customer as string,
+          customerEmail: customerMap.get(charge.customer as string)?.email || null,
+          description: charge.description,
+          created: new Date(charge.created * 1000).toISOString(),
+          invoiceId: (charge as unknown as { invoice: string | null }).invoice,
+          receiptUrl: charge.receipt_url,
+        }));
+
+        // Format subscriptions
+        const subs = subscriptions.data.map(sub => {
+          const subAny = sub as unknown as {
+            current_period_start: number;
+            current_period_end: number;
+          };
+          return {
+            id: sub.id,
+            status: sub.status,
+            customerId: sub.customer as string,
+            customerEmail: customerMap.get(sub.customer as string)?.email || null,
+            plan: sub.items.data[0]?.price.nickname || sub.items.data[0]?.price.id,
+            amount: (sub.items.data[0]?.price.unit_amount || 0) / 100,
+            currency: sub.items.data[0]?.price.currency?.toUpperCase() || 'AUD',
+            interval: sub.items.data[0]?.price.recurring?.interval || 'month',
+            currentPeriodStart: new Date(subAny.current_period_start * 1000).toISOString(),
+            currentPeriodEnd: new Date(subAny.current_period_end * 1000).toISOString(),
+            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            created: new Date(sub.created * 1000).toISOString(),
+          };
+        });
+
+        // Summary stats
+        const totalRevenue = payments
+          .filter(p => p.status === 'succeeded')
+          .reduce((sum, p) => sum + p.amount, 0);
+
+        const activeSubscriptions = subs.filter(s => s.status === 'active').length;
+        const canceledSubscriptions = subs.filter(s => s.status === 'canceled').length;
+
+        return success({
+          payments,
+          subscriptions: subs,
+          summary: {
+            totalRevenue,
+            totalPayments: payments.length,
+            successfulPayments: payments.filter(p => p.status === 'succeeded').length,
+            activeSubscriptions,
+            canceledSubscriptions,
+            totalCustomers: customers.data.length,
+          },
+        });
+      } catch (err) {
+        console.error('Failed to fetch Stripe data:', err);
+        return success({
+          payments: [],
+          subscriptions: [],
+          summary: {
+            totalRevenue: 0,
+            totalPayments: 0,
+            successfulPayments: 0,
+            activeSubscriptions: 0,
+            canceledSubscriptions: 0,
+            totalCustomers: 0,
+          },
+          error: 'Failed to fetch payment data from Stripe',
+        });
+      }
     }
 
     return badRequest('Invalid endpoint');

@@ -485,24 +485,116 @@ export interface UsageByDay {
   count: number;
 }
 
+// Admin fetch wrapper - uses X-Admin-Key header (decoupled from parent auth)
+async function adminFetch<T>(path: string): Promise<T> {
+  const adminKey = typeof window !== 'undefined' ? localStorage.getItem('adminKey') : null;
+
+  if (!adminKey) {
+    throw new Error('Admin authentication required');
+  }
+
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Key': adminKey,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error('Invalid admin key');
+    }
+    throw new Error(`Admin API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export function setAdminKey(key: string): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('adminKey', key);
+  }
+}
+
+export function getAdminKey(): string | null {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('adminKey');
+  }
+  return null;
+}
+
+export function clearAdminKey(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('adminKey');
+  }
+}
+
 export async function getAdminStats(): Promise<AdminStats> {
-  return apiFetch('/admin/stats');
+  return adminFetch('/admin/stats');
 }
 
 export async function getAdminUsers(): Promise<{ users: AdminUser[] }> {
-  return apiFetch('/admin/users');
+  return adminFetch('/admin/users');
 }
 
 export async function getAdminChildren(): Promise<{ children: AdminChild[] }> {
-  return apiFetch('/admin/children');
+  return adminFetch('/admin/children');
 }
 
 export async function getAdminAILogs(limit = 50): Promise<{ logs: AILog[] }> {
-  return apiFetch(`/admin/ai-logs?limit=${limit}`);
+  return adminFetch(`/admin/ai-logs?limit=${limit}`);
 }
 
 export async function getAdminUsageByDay(): Promise<{ days: UsageByDay[] }> {
-  return apiFetch('/admin/usage-by-day');
+  return adminFetch('/admin/usage-by-day');
+}
+
+export interface AdminPayment {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  customerId: string;
+  customerEmail: string | null;
+  description: string | null;
+  created: string;
+  invoiceId: string | null;
+  receiptUrl: string | null;
+}
+
+export interface AdminSubscription {
+  id: string;
+  status: string;
+  customerId: string;
+  customerEmail: string | null;
+  plan: string;
+  amount: number;
+  currency: string;
+  interval: string;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+  created: string;
+}
+
+export interface PaymentSummary {
+  totalRevenue: number;
+  totalPayments: number;
+  successfulPayments: number;
+  activeSubscriptions: number;
+  canceledSubscriptions: number;
+  totalCustomers: number;
+}
+
+export interface AdminPaymentsData {
+  payments: AdminPayment[];
+  subscriptions: AdminSubscription[];
+  summary: PaymentSummary;
+  error?: string;
+}
+
+export async function getAdminPayments(): Promise<AdminPaymentsData> {
+  return adminFetch('/admin/payments');
 }
 
 // ============ PAYMENT API ============

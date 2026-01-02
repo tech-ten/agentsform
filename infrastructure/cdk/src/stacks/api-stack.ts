@@ -56,6 +56,7 @@ export class ApiStack extends cdk.Stack {
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
       STRIPE_PRICE_SCHOLAR: process.env.STRIPE_PRICE_SCHOLAR || '',
       STRIPE_PRICE_ACHIEVER: process.env.STRIPE_PRICE_ACHIEVER || '',
+      ADMIN_API_KEY: process.env.ADMIN_API_KEY || 'studymate-admin-2024',
       FRONTEND_URL: 'https://tutor.agentsform.ai',
     };
 
@@ -225,41 +226,55 @@ export class ApiStack extends cdk.Stack {
     });
 
     // === ADMIN ROUTES ===
-    const adminHandler = createLambda('AdminHandler', 'handlers/admin.handler');
+    // Admin handler uses pre-bundled code (includes stripe for payment data access)
+    const adminHandler = new lambda.Function(this, 'AdminHandler', {
+      functionName: 'agentsform-adminhandler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.ARM_64,
+      handler: 'admin.handler',
+      code: lambda.Code.fromAsset('../../packages/api/dist-bundled'),
+      memorySize: 256,
+      timeout: cdk.Duration.seconds(30),
+      environment: commonEnv,
+    });
+    table.grantReadWriteData(adminHandler);
 
+    // Admin routes use API key auth (X-Admin-Key header), not Cognito
+    // This decouples admin from parent accounts
     this.api.addRoutes({
       path: '/admin/stats',
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminStatsIntegration', adminHandler),
-      authorizer,
     });
 
     this.api.addRoutes({
       path: '/admin/users',
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminUsersIntegration', adminHandler),
-      authorizer,
     });
 
     this.api.addRoutes({
       path: '/admin/children',
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminChildrenIntegration', adminHandler),
-      authorizer,
     });
 
     this.api.addRoutes({
       path: '/admin/ai-logs',
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminAILogsIntegration', adminHandler),
-      authorizer,
     });
 
     this.api.addRoutes({
       path: '/admin/usage-by-day',
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminUsageIntegration', adminHandler),
-      authorizer,
+    });
+
+    this.api.addRoutes({
+      path: '/admin/payments',
+      methods: [apigatewayv2.HttpMethod.GET],
+      integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminPaymentsIntegration', adminHandler),
     });
 
     // === PAYMENT ROUTES ===
