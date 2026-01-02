@@ -60,7 +60,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
       const userEmail = userResult.Item?.email;
 
-      // Create Stripe Checkout session
+      // Create Stripe Checkout session with 1-month free trial
       const session = await stripe.checkout.sessions.create({
         mode: 'subscription',
         payment_method_types: ['card'],
@@ -78,6 +78,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         success_url: `${process.env.FRONTEND_URL || 'https://tutor.agentsform.ai'}/dashboard?payment=success`,
         cancel_url: `${process.env.FRONTEND_URL || 'https://tutor.agentsform.ai'}/pricing?payment=cancelled`,
         subscription_data: {
+          trial_period_days: 30, // 1-month free trial
           metadata: {
             userId,
             plan,
@@ -130,7 +131,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
             const plan = subscription.items.data[0]?.price.id === PRICE_IDS.achiever ? 'achiever' : 'scholar';
             const status = subscription.status;
 
-            if (status === 'active') {
+            // Active or trialing subscriptions get the paid tier
+            if (status === 'active' || status === 'trialing') {
               await updateUserTier(userId, plan, subscription.id);
             } else if (status === 'canceled' || status === 'unpaid') {
               await updateUserTier(userId, 'free', null);
