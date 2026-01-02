@@ -286,15 +286,79 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-neutral-100">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-sm text-neutral-500">
-            © 2025 StudyMate. Built in Australia.
+      <footer className="py-16 px-6 border-t border-neutral-100 bg-neutral-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            {/* Company Info */}
+            <div className="md:col-span-2">
+              <h3 className="text-lg font-semibold mb-4">StudyMate</h3>
+              <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
+                AI-powered tutoring for Australian students. Personalised learning
+                aligned with the Australian curriculum from Prep to Year 12.
+              </p>
+              <div className="text-sm text-neutral-500 space-y-1">
+                <p><strong>Enhanced Software Systems</strong></p>
+                <p>A product of SOFTSYS PTY LTD</p>
+                <p>ABN: 64 663 472 759</p>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-neutral-600">
+                <li><Link href="#features" className="hover:text-black transition-colors">Features</Link></li>
+                <li><Link href="#pricing" className="hover:text-black transition-colors">Pricing</Link></li>
+                <li><Link href="/login" className="hover:text-black transition-colors">Sign In</Link></li>
+                <li><Link href="/register" className="hover:text-black transition-colors">Get Started</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact & Legal */}
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-neutral-600">
+                <li><Link href="/contact" className="hover:text-black transition-colors">Contact Us</Link></li>
+                <li><Link href="/terms" className="hover:text-black transition-colors">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:text-black transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/refund" className="hover:text-black transition-colors">Refund Policy</Link></li>
+              </ul>
+            </div>
           </div>
-          <div className="flex gap-6 text-sm text-neutral-500">
-            <Link href="#" className="hover:text-black transition-colors">Privacy</Link>
-            <Link href="#" className="hover:text-black transition-colors">Terms</Link>
-            <Link href="#" className="hover:text-black transition-colors">Contact</Link>
+
+          {/* Contact Details */}
+          <div className="border-t border-neutral-200 pt-8 mb-8">
+            <h4 className="font-semibold mb-4">Contact Us</h4>
+            <div className="grid md:grid-cols-3 gap-6 text-sm text-neutral-600">
+              <div>
+                <p className="font-medium text-black mb-1">Email</p>
+                <a href="mailto:support@agentsform.ai" className="hover:text-black transition-colors">
+                  support@agentsform.ai
+                </a>
+              </div>
+              <div>
+                <p className="font-medium text-black mb-1">Phone</p>
+                <a href="tel:+61410386167" className="hover:text-black transition-colors">
+                  +61 410 386 167
+                </a>
+              </div>
+              <div>
+                <p className="font-medium text-black mb-1">Address</p>
+                <p>17 Koomba Crescent<br />Greenvale VIC 3059<br />Australia</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="border-t border-neutral-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-neutral-500">
+              © 2025 SOFTSYS PTY LTD trading as Enhanced Software Systems. All rights reserved.
+            </div>
+            <div className="flex gap-6 text-sm text-neutral-500">
+              <Link href="/privacy" className="hover:text-black transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-black transition-colors">Terms</Link>
+              <Link href="/refund" className="hover:text-black transition-colors">Refunds</Link>
+            </div>
           </div>
         </div>
       </footer>
