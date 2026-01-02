@@ -78,7 +78,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         success_url: `${process.env.FRONTEND_URL || 'https://tutor.agentsform.ai'}/dashboard?payment=success`,
         cancel_url: `${process.env.FRONTEND_URL || 'https://tutor.agentsform.ai'}/pricing?payment=cancelled`,
         subscription_data: {
-          trial_period_days: 30, // 1-month free trial
+          trial_period_days: 14, // 2-week free trial
           metadata: {
             userId,
             plan,
