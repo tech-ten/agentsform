@@ -504,3 +504,32 @@ export async function getAdminAILogs(limit = 50): Promise<{ logs: AILog[] }> {
 export async function getAdminUsageByDay(): Promise<{ days: UsageByDay[] }> {
   return apiFetch('/admin/usage-by-day');
 }
+
+// ============ PAYMENT API ============
+
+export interface TierLimits {
+  maxChildren: number;
+  dailyQuestions: number;
+  dailyAiCalls: number;
+}
+
+export interface SubscriptionStatus {
+  tier: 'free' | 'scholar' | 'achiever';
+  subscriptionId: string | null;
+  limits: TierLimits;
+}
+
+export async function createCheckoutSession(plan: 'scholar' | 'achiever'): Promise<{ sessionId: string; url: string }> {
+  return apiFetch('/payments/create-checkout', {
+    method: 'POST',
+    body: JSON.stringify({ plan }),
+  });
+}
+
+export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
+  return apiFetch('/payments/status');
+}
+
+export async function getCustomerPortalUrl(): Promise<{ url: string }> {
+  return apiFetch('/payments/portal');
+}

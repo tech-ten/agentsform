@@ -52,6 +52,11 @@ export class ApiStack extends cdk.Stack {
       TABLE_NAME: table.tableName,
       USER_POOL_ID: userPool.userPoolId,
       GROQ_API_KEY: process.env.GROQ_API_KEY || '',
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || '',
+      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
+      STRIPE_PRICE_SCHOLAR: process.env.STRIPE_PRICE_SCHOLAR || '',
+      STRIPE_PRICE_ACHIEVER: process.env.STRIPE_PRICE_ACHIEVER || '',
+      FRONTEND_URL: 'https://tutor.agentsform.ai',
     };
 
     // Lambda function factory
@@ -255,6 +260,51 @@ export class ApiStack extends cdk.Stack {
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new apigatewayv2Integrations.HttpLambdaIntegration('AdminUsageIntegration', adminHandler),
       authorizer,
+    });
+
+    // === PAYMENT ROUTES ===
+    // Payment handler uses pre-bundled code (includes stripe)
+    const paymentHandler = new lambda.Function(this, 'PaymentHandler', {
+      functionName: 'studymate-paymenthandler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.ARM_64,
+      handler: 'payment.handler',
+      code: lambda.Code.fromAsset('../../packages/api/dist-bundled'),
+      memorySize: 256,
+      timeout: cdk.Duration.seconds(30),
+      environment: commonEnv,
+    });
+    table.grantReadWriteData(paymentHandler);
+
+    // Create checkout session - requires auth
+    this.api.addRoutes({
+      path: '/payments/create-checkout',
+      methods: [apigatewayv2.HttpMethod.POST],
+      integration: new apigatewayv2Integrations.HttpLambdaIntegration('PaymentCheckoutIntegration', paymentHandler),
+      authorizer,
+    });
+
+    // Customer portal - requires auth
+    this.api.addRoutes({
+      path: '/payments/portal',
+      methods: [apigatewayv2.HttpMethod.GET],
+      integration: new apigatewayv2Integrations.HttpLambdaIntegration('PaymentPortalIntegration', paymentHandler),
+      authorizer,
+    });
+
+    // Subscription status - requires auth
+    this.api.addRoutes({
+      path: '/payments/status',
+      methods: [apigatewayv2.HttpMethod.GET],
+      integration: new apigatewayv2Integrations.HttpLambdaIntegration('PaymentStatusIntegration', paymentHandler),
+      authorizer,
+    });
+
+    // Stripe webhook - no auth (Stripe signature verification instead)
+    this.api.addRoutes({
+      path: '/payments/webhook',
+      methods: [apigatewayv2.HttpMethod.POST],
+      integration: new apigatewayv2Integrations.HttpLambdaIntegration('PaymentWebhookIntegration', paymentHandler),
     });
 
     // Outputs

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getChildren, getProgress, type Child, type SubjectProgress } from '@/lib/api'
+import { getChildren, getProgress, getSubscriptionStatus, type Child, type SubscriptionStatus } from '@/lib/api'
 import { isAuthenticatedSync, setSelectedChild, signOut } from '@/lib/auth'
 
 interface ChildProgress {
@@ -23,6 +23,7 @@ export default function DashboardPage() {
   const [progressData, setProgressData] = useState<Record<string, ChildProgress[]>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null)
 
   useEffect(() => {
     if (!isAuthenticatedSync()) {
@@ -30,7 +31,17 @@ export default function DashboardPage() {
       return
     }
     loadChildren()
+    loadSubscription()
   }, [router])
+
+  const loadSubscription = async () => {
+    try {
+      const status = await getSubscriptionStatus()
+      setSubscription(status)
+    } catch (err) {
+      console.error('Failed to load subscription:', err)
+    }
+  }
 
   const loadChildren = async () => {
     try {
@@ -91,6 +102,18 @@ export default function DashboardPage() {
             StudyMate
           </Link>
           <div className="flex items-center gap-4">
+            {subscription && subscription.tier === 'free' && (
+              <Link href="/pricing">
+                <Button size="sm" variant="outline" className="rounded-full border-amber-400 text-amber-600 hover:bg-amber-50">
+                  Upgrade
+                </Button>
+              </Link>
+            )}
+            {subscription && subscription.tier !== 'free' && (
+              <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full capitalize">
+                {subscription.tier}
+              </span>
+            )}
             <Link href="/children/add">
               <Button size="sm" className="rounded-full">Add Child</Button>
             </Link>
