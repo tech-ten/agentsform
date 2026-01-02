@@ -140,6 +140,18 @@ export const analyticsKeys = {
     PK: `CHILD#${childId}`,
     SK: `WEEKLY#${weekStart}`,
   }),
+
+  // Knowledge token mastery tracking (granular skill tracking)
+  knowledgeToken: (childId: string, tokenId: string) => ({
+    PK: `CHILD#${childId}`,
+    SK: `TOKEN#${tokenId}`,
+  }),
+
+  // AI-generated insights for a child
+  aiInsight: (childId: string, insightDate: string) => ({
+    PK: `CHILD#${childId}`,
+    SK: `AI_INSIGHT#${insightDate}`,
+  }),
 };
 
 // ============ DATA TYPES ============
@@ -412,6 +424,84 @@ export interface ParentReport {
     title: string;
     description: string;
     date: string;
+  }>;
+
+  // AI-generated deep insights (optional, for premium users)
+  aiInsights?: AIGeneratedInsight;
+}
+
+// ============ KNOWLEDGE TOKEN TYPES ============
+
+/**
+ * Tracks mastery of a specific knowledge token (granular skill)
+ * e.g., "acute-angle-identification" within the "Angles" section
+ */
+export interface KnowledgeTokenMastery {
+  PK: string;
+  SK: string;
+  type: 'TOKEN_MASTERY';
+  childId: string;
+  tokenId: string;
+  sectionId: string;
+
+  // Human-readable info
+  tokenName: string;
+  tokenDescription: string;
+
+  // Performance metrics
+  totalAttempts: number;
+  correctAttempts: number;
+  masteryScore: number;  // 0-100
+
+  // Confusion tracking - what does the student choose instead?
+  confusionPatterns: Record<string, number>;  // e.g., { "acute-right-confusion": 3 }
+
+  // Trend tracking
+  recentAttempts: number;      // Last 5 attempts
+  recentCorrect: number;       // Correct in last 5
+  trend: 'improving' | 'stable' | 'declining';
+
+  // Time tracking
+  avgTimeSeconds: number;
+  lastAttemptAt: string;
+  firstAttemptAt: string;
+}
+
+/**
+ * AI-generated insights based on attempt analysis
+ */
+export interface AIGeneratedInsight {
+  generatedAt: string;
+  model: string;  // e.g., "gpt-4o-mini" or "claude-3-haiku"
+
+  // High-level summary
+  summary: string;
+
+  // Specific misconceptions identified
+  misconceptions: Array<{
+    area: string;           // e.g., "Angle Classification"
+    description: string;    // e.g., "Confuses acute angles with right angles"
+    evidence: string[];     // Question IDs that show this pattern
+    severity: 'mild' | 'moderate' | 'significant';
+    suggestion: string;     // Parent-friendly recommendation
+  }>;
+
+  // Strengths identified
+  strengths: Array<{
+    area: string;
+    description: string;
+    evidence: string[];
+  }>;
+
+  // Parent-friendly narrative
+  narrativeSummary: string;
+
+  // Specific activities to address gaps
+  recommendedActivities: Array<{
+    activity: string;
+    targetSkill: string;
+    estimatedMinutes: number;
+    materials?: string;
   }>;
 }
 

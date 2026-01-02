@@ -1218,6 +1218,48 @@ All angles around a point add up to 360° (a full rotation).`,
                 'Use benchmarks (45°, 90°, 180°) to estimate',
                 'A protractor measures angles precisely'
               ],
+              knowledgeTokens: [
+                {
+                  id: 'acute-angle-identification',
+                  name: 'Acute Angle Identification',
+                  description: 'Recognising angles less than 90°',
+                },
+                {
+                  id: 'right-angle-identification',
+                  name: 'Right Angle Identification',
+                  description: 'Recognising angles exactly 90°',
+                },
+                {
+                  id: 'obtuse-angle-identification',
+                  name: 'Obtuse Angle Identification',
+                  description: 'Recognising angles between 90° and 180°',
+                  prerequisites: ['acute-angle-identification', 'right-angle-identification'],
+                },
+                {
+                  id: 'reflex-angle-identification',
+                  name: 'Reflex Angle Identification',
+                  description: 'Recognising angles greater than 180°',
+                  prerequisites: ['obtuse-angle-identification'],
+                },
+                {
+                  id: 'angle-addition',
+                  name: 'Angle Addition',
+                  description: 'Adding angles together to find totals',
+                  prerequisites: ['right-angle-identification'],
+                },
+                {
+                  id: 'triangle-angle-sum',
+                  name: 'Triangle Angle Sum',
+                  description: 'Understanding that angles in a triangle sum to 180°',
+                  prerequisites: ['angle-addition'],
+                },
+                {
+                  id: 'reflex-complementary',
+                  name: 'Reflex and Complementary Angles',
+                  description: 'Understanding that reflex angle + acute/obtuse = 360°',
+                  prerequisites: ['reflex-angle-identification'],
+                },
+              ],
               examples: [
                 {
                   problem: 'What type of angle is 135°?',
@@ -1237,7 +1279,17 @@ All angles around a point add up to 360° (a full rotation).`,
                   options: ['Acute', 'Right', 'Obtuse', 'Reflex'],
                   correctAnswer: 0,
                   explanation: '75° is less than 90°, so it is an acute angle',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['acute-angle-identification', 'right-angle-identification', 'obtuse-angle-identification'],
+                    correctToken: 'acute-angle-identification',
+                    incorrectTokens: [
+                      null, // Option A is correct
+                      'acute-right-confusion',      // Chose Right: confuses acute with right
+                      'acute-obtuse-confusion',     // Chose Obtuse: confuses acute with obtuse
+                      'reflex-misunderstanding',    // Chose Reflex: doesn't understand reflex angles
+                    ],
+                  },
                 },
                 {
                   id: 'VCMMG202-002',
@@ -1245,7 +1297,17 @@ All angles around a point add up to 360° (a full rotation).`,
                   options: ['Acute', 'Right', 'Obtuse', 'Reflex'],
                   correctAnswer: 2,
                   explanation: '145° is between 90° and 180°, so it is an obtuse angle',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['obtuse-angle-identification'],
+                    correctToken: 'obtuse-angle-identification',
+                    incorrectTokens: [
+                      'obtuse-acute-confusion',     // Chose Acute: confuses obtuse with acute
+                      'obtuse-right-confusion',     // Chose Right: confuses obtuse with right
+                      null, // Option C is correct
+                      'obtuse-reflex-confusion',    // Chose Reflex: confuses obtuse with reflex
+                    ],
+                  },
                 },
                 {
                   id: 'VCMMG202-003',
@@ -1253,7 +1315,17 @@ All angles around a point add up to 360° (a full rotation).`,
                   options: ['115°', '125°', '135°', '145°'],
                   correctAnswer: 1,
                   explanation: 'A right angle = 90°, so 90° + 35° = 125°',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['angle-addition', 'right-angle-identification'],
+                    correctToken: 'angle-addition',
+                    incorrectTokens: [
+                      'addition-error-minus-10',    // 125-10=115: subtraction or calculation error
+                      null, // Option B is correct
+                      'addition-error-plus-10',     // 125+10=135: addition error
+                      'right-angle-value-error',    // May have used wrong value for right angle
+                    ],
+                  },
                 },
                 {
                   id: 'VCMMG202-004',
@@ -1261,7 +1333,17 @@ All angles around a point add up to 360° (a full rotation).`,
                   options: ['35°', '45°', '55°', '65°'],
                   correctAnswer: 1,
                   explanation: 'Triangle angles = 180°, so 180 - 90 - 45 = 45°',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['triangle-angle-sum', 'angle-addition'],
+                    correctToken: 'triangle-angle-sum',
+                    incorrectTokens: [
+                      'triangle-sum-calculation-error', // 180-90-45 calculated wrong
+                      null, // Option B is correct
+                      'triangle-sum-calculation-error', // calculation error
+                      'triangle-sum-rule-error',        // May not know 180° rule
+                    ],
+                  },
                 },
                 {
                   id: 'VCMMG202-005',
@@ -1269,7 +1351,17 @@ All angles around a point add up to 360° (a full rotation).`,
                   options: ['130°', '230°', '310°', '360°'],
                   correctAnswer: 2,
                   explanation: 'A reflex angle and its corresponding angle make 360°. 360° - 50° = 310°',
-                  difficulty: 3
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['reflex-complementary', 'reflex-angle-identification'],
+                    correctToken: 'reflex-complementary',
+                    incorrectTokens: [
+                      'supplementary-confusion',     // 180-50=130: confused with supplementary angles
+                      'reflex-calculation-error',    // Wrong calculation
+                      null, // Option C is correct
+                      'full-rotation-confusion',     // Chose 360°: confused reflex with full rotation
+                    ],
+                  },
                 }
               ]
             }

@@ -11,40 +11,76 @@ StudyMate's Learning Analytics is a premium feature (Scholar plan - $5/month) th
 - Shows mastery percentage for each concept
 - Tracks improvement trends (improving/stable/declining)
 
-### 2. Error Pattern Detection
+### 2. Knowledge Token Analytics (NEW)
+Granular skill-level tracking within each concept. For example, "Angles" breaks down into:
+- Acute angle identification
+- Right angle identification
+- Obtuse angle identification
+- Reflex angle identification
+- Angle addition
+- Triangle angle sum
+
+This enables insights like: "Your child correctly identifies obtuse angles but confuses acute angles with right angles."
+
+### 3. Confusion Pattern Detection (NEW)
+When a student selects a wrong answer, we track what misconception that indicates:
+- Selecting "Right angle" for a 45° angle → "acute-right-confusion"
+- Selecting "Obtuse" for a 60° angle → "acute-obtuse-confusion"
+- Selecting "Reflex" for a 120° angle → "obtuse-reflex-confusion"
+
+These patterns accumulate to reveal specific misconceptions.
+
+### 4. AI-Generated Insights (NEW)
+Automatically generated parent-friendly insights based on pattern analysis:
+- **Misconceptions**: "Your child often confuses acute angles with right angles. They may think any 'small' angle is 90°."
+- **Strengths**: "Shows strong understanding of Identifying Obtuse Angles, Identifying Right Angles"
+- **Patterns**: "Tends to answer too quickly on questions they get wrong - encourage taking more time to read carefully"
+- **Recommendations**: "Use a set square to show exactly 90°, then compare smaller angles to it"
+
+### 5. Error Pattern Detection
 Identifies recurring mistakes such as:
 - "Always rounds down when should round up"
 - "Confuses place value when comparing numbers"
 - "Adds instead of subtracts in word problems"
 - "Misreads the question"
 
-### 3. Daily Activity Charts
+### 6. Daily Activity Charts
 - Visual bar charts showing daily question attempts
 - Colour-coded by accuracy (green/yellow/red)
 - Tracks time spent learning
 - Shows active days count
 
-### 4. Personalised Recommendations
+### 7. Personalised Recommendations
 - Priority-based suggestions (high/medium/low)
 - Specific activities to address weak areas
 - Estimated time for each recommendation
 - Parent-friendly language
 
-### 5. Parent Reports
+### 8. Parent Reports
 - Weekly/monthly summary reports
 - Overall progress status (excellent/good/needs-attention/struggling)
-- Key insights in plain language
+- Key insights in plain language (now including AI-generated insights)
 - Achievement tracking
+- Knowledge token breakdown
+
+---
 
 ## Technical Architecture
 
 ### API Endpoints
-- `POST /analytics/attempt` - Record detailed attempt with question data
-- `GET /analytics/child/:childId/concepts` - Concept mastery breakdown
-- `GET /analytics/child/:childId/weaknesses` - Identify struggling areas
-- `GET /analytics/child/:childId/patterns` - Error pattern analysis
-- `GET /analytics/child/:childId/report` - Full parent report
-- `GET /analytics/child/:childId/daily` - Daily activity stats
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/analytics/attempt` | POST | Record detailed attempt with question data and knowledge tokens |
+| `/analytics/child/:childId/concepts` | GET | Concept mastery breakdown + knowledge tokens |
+| `/analytics/child/:childId/weaknesses` | GET | Identify struggling areas + AI insights |
+| `/analytics/child/:childId/patterns` | GET | Error pattern analysis |
+| `/analytics/child/:childId/report` | GET | Full parent report with AI insights |
+| `/analytics/child/:childId/daily` | GET | Daily activity stats |
+| `/analytics/child/:childId/tokens` | GET | Knowledge token mastery (NEW) |
+| `/analytics/child/:childId/insights` | GET | AI-generated insights (NEW) |
+| `/analytics/child/:childId/question/:questionId` | GET | Question history for child |
+| `/analytics/question/:questionId` | GET | Global question analytics |
 
 ### Data Tracked Per Attempt
 - Question text, options, and explanation
@@ -52,22 +88,176 @@ Identifies recurring mistakes such as:
 - Time spent on question
 - Whether AI explanation was requested
 - Session type (quiz/practice/exam)
+- **Knowledge token data (NEW)**:
+  - `knowledgeToken`: The skill being tested
+  - `confusionToken`: The misconception indicated by wrong answer
+  - `questionTokens`: All tokens relevant to the question
 
-### Concept Taxonomy
-Questions are automatically tagged with concepts like:
-- `place-value-identification`
-- `rounding`
-- `fraction-equivalence`
-- `decimal-comparison`
-- etc.
+### DynamoDB Schema
+
+```
+CHILD#{childId}
+├── CONCEPT#{concept}          # Concept-level mastery
+├── TOKEN#{tokenId}            # Knowledge token mastery (NEW)
+├── ERROR#{errorType}          # Error patterns
+├── QUESTION#{questionId}      # Per-question history
+├── DAILY#{date}               # Daily stats
+├── ATTEMPT#{timestamp}        # Individual attempts
+└── AI_INSIGHT#{date}          # Cached AI insights (future)
+
+QUESTION#{questionId}          # Global question analytics
+```
+
+### Knowledge Token Schema
+
+```typescript
+interface KnowledgeToken {
+  id: string;                    // e.g., "acute-angle-identification"
+  name: string;                  // e.g., "Acute Angle Identification"
+  description: string;           // e.g., "Recognising angles less than 90°"
+  prerequisites?: string[];      // Token IDs that should be mastered first
+}
+
+interface QuestionKnowledge {
+  questionTokens: string[];      // All tokens being tested
+  correctToken: string;          // Token demonstrated by correct answer
+  incorrectTokens: (string | null)[];  // Misconception per wrong option
+}
+```
+
+### Token Mastery Record
+
+```typescript
+interface KnowledgeTokenMastery {
+  PK: string;                    // CHILD#{childId}
+  SK: string;                    // TOKEN#{tokenId}
+  type: 'TOKEN_MASTERY';
+  childId: string;
+  tokenId: string;
+  sectionId: string;
+  totalAttempts: number;
+  correctAttempts: number;
+  masteryScore: number;          // 0-100
+  confusionPatterns: {           // Track misconceptions
+    [confusionTokenId: string]: number;  // Count of occurrences
+  };
+  trend: 'improving' | 'stable' | 'declining';
+  avgTimeSeconds: number;
+  lastAttemptAt: string;
+  firstAttemptAt: string;
+}
+```
+
+### AI Insight Generation
+
+The system generates insights without calling external AI APIs. Instead, it uses rule-based pattern analysis:
+
+```typescript
+interface AIInsight {
+  type: 'misconception' | 'strength' | 'pattern' | 'recommendation';
+  insight: string;               // Parent-friendly text
+  confidence: 'high' | 'medium' | 'low';
+  relatedTokens?: string[];
+  suggestedAction?: string;      // What parent/child can do
+}
+```
+
+**Insight Types Generated:**
+1. **Misconception insights**: Based on confusion pattern counts
+2. **Struggling skill insights**: Based on low mastery scores
+3. **Strength insights**: Based on high mastery scores
+4. **Time pattern insights**: Rushing vs overthinking analysis
+5. **Trend insights**: Improving or declining performance
+
+### Curriculum Integration
+
+Knowledge tokens are defined per curriculum section:
+
+```typescript
+// In year5.ts - Angles section
+{
+  id: 'VCMMG202',
+  code: 'VCMMG202',
+  title: 'Angles',
+  knowledgeTokens: [
+    { id: 'acute-angle-identification', name: 'Acute Angle Identification', ... },
+    { id: 'right-angle-identification', name: 'Right Angle Identification', ... },
+    { id: 'obtuse-angle-identification', name: 'Obtuse Angle Identification', ... },
+    // ...
+  ],
+  questions: [
+    {
+      id: 'VCMMG202-001',
+      question: 'What type of angle is 75°?',
+      options: ['Acute', 'Right', 'Obtuse', 'Reflex'],
+      correctAnswer: 0,
+      knowledge: {
+        questionTokens: ['acute-angle-identification', 'right-angle-identification', ...],
+        correctToken: 'acute-angle-identification',
+        incorrectTokens: [
+          null,                        // Option A is correct
+          'acute-right-confusion',     // Chose Right
+          'acute-obtuse-confusion',    // Chose Obtuse
+          'reflex-misunderstanding',   // Chose Reflex
+        ],
+      },
+    },
+    // ...
+  ],
+}
+```
+
+### Frontend Integration
+
+To send knowledge tokens with attempts:
+
+```typescript
+// When recording an attempt
+await fetch('/analytics/attempt', {
+  method: 'POST',
+  body: JSON.stringify({
+    childId,
+    questionId: question.id,
+    sectionId,
+    selectedAnswer,
+    correctAnswer: question.correctAnswer,
+    timeSpentSeconds,
+    difficulty: question.difficulty,
+    questionText: question.question,
+    options: question.options,
+    explanation: question.explanation,
+    // NEW: Include knowledge token data if available
+    knowledge: question.knowledge,
+  }),
+});
+```
+
+---
 
 ## Premium Gating
 
 - **Free (Explorer)**: Basic progress tracking only
-- **Scholar ($5/mo)**: Full analytics dashboard access
-- **Achiever ($12/mo)**: Full analytics + PDF reports
+- **Scholar ($5/mo)**: Full analytics dashboard with AI insights
+- **Achiever ($12/mo)**: Full analytics + PDF reports + priority support
 
 Free users see an upgrade prompt when accessing `/analytics`.
+
+---
+
+## Rollout Plan
+
+### Phase 1: Angles Section (Current)
+- Knowledge tokens added to Year 5 Angles (VCMMG202)
+- 7 knowledge tokens, 10 questions tagged
+- Tracking confusion patterns
+
+### Phase 2: Year 5 Maths (Next)
+- Add knowledge tokens to all Year 5 sections
+- Priority: Place Value, Rounding, Fractions
+
+### Phase 3: Years 4-6 Maths
+- Extend to all year levels
+- Build comprehensive token library
 
 ---
 
@@ -127,13 +317,29 @@ You see:
 
 ---
 
-## Post 5: Real Example
+## Post 5: Knowledge Tokens (NEW)
+**Hook**: "We don't just tell you 'your child is struggling with angles'. We tell you WHICH type of angle."
+
+**Body**: Our new Knowledge Token system breaks down every topic into specific skills:
+
+Angles isn't just "angles". It's:
+- Acute angle identification ✓ (85%)
+- Obtuse angle identification ✓ (78%)
+- **Acute vs Right confusion ✗ (42%)**
+
+Now you know exactly what to practice. Use a set square to show exactly 90°, then compare smaller angles to it.
+
+**CTA**: Granular insights that make a real difference.
+
+---
+
+## Post 6: Real Example
 **Hook**: "Here's what a parent saw in their StudyMate dashboard this week:"
 
 **Body**:
 - Concept Mastery: Rounding (92%), Place Value (67%), Fractions (45%)
-- Error Pattern Detected: "Confuses numerator and denominator when comparing fractions"
-- Recommendation: "Spend 10 minutes with pizza slices showing 1/2 vs 2/4"
+- **AI Insight**: "Your child often confuses acute angles with right angles. They may think any 'small' angle is 90°."
+- **Suggested Action**: "Use a set square to show exactly 90°, then compare smaller angles to it"
 - Trend: Improving in place value (+12% this week)
 
 This is the visibility every parent deserves.
@@ -147,6 +353,8 @@ This is the visibility every parent deserves.
 - "Parent-friendly language"
 - "Know what to practise, not just that they need to"
 - "Beyond 'you got 7/10'"
+- "Granular skill-level tracking" (NEW)
+- "Know exactly which type of angle trips them up" (NEW)
 
 ## Hashtags
 #EdTech #ParentingTips #MathsHelp #PrimarySchool #VictorianCurriculum #LearningAnalytics #PersonalisedLearning #StudyMate

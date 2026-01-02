@@ -74,6 +74,18 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       return await getQuestionAnalytics(questionId);
     }
 
+    // GET /analytics/child/:childId/tokens - Get knowledge token mastery
+    if (path.match(/^\/analytics\/child\/[\w-]+\/tokens$/) && method === 'GET') {
+      const childId = path.split('/')[3];
+      return await getKnowledgeTokenMastery(childId);
+    }
+
+    // GET /analytics/child/:childId/insights - Get AI-generated insights
+    if (path.match(/^\/analytics\/child\/[\w-]+\/insights$/) && method === 'GET') {
+      const childId = path.split('/')[3];
+      return await getAIInsights(childId);
+    }
+
     return badRequest('Invalid analytics endpoint');
   } catch (error) {
     console.error('Analytics handler error:', error);
@@ -82,6 +94,15 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 }
 
 // ============ RECORD ATTEMPT WITH FULL ANALYTICS ============
+
+/**
+ * Knowledge tokens for a question - passed from frontend with curriculum data
+ */
+interface QuestionKnowledge {
+  questionTokens: string[];
+  correctToken: string;
+  incorrectTokens: (string | null)[];
+}
 
 async function recordDetailedAttempt(body: {
   childId: string;
@@ -96,11 +117,12 @@ async function recordDetailedAttempt(body: {
   explanation: string;
   sessionType?: 'quiz' | 'practice' | 'exam' | 'adaptive';
   aiExplanationRequested?: boolean;
+  knowledge?: QuestionKnowledge;  // NEW: Knowledge token data from curriculum
 }): Promise<APIGatewayProxyResultV2> {
   const {
     childId, questionId, sectionId, selectedAnswer, correctAnswer,
     timeSpentSeconds, difficulty, questionText, options, explanation,
-    sessionType = 'quiz', aiExplanationRequested = false
+    sessionType = 'quiz', aiExplanationRequested = false, knowledge
   } = body;
 
   if (!childId || !questionId || !sectionId || selectedAnswer === undefined) {
@@ -111,7 +133,7 @@ async function recordDetailedAttempt(body: {
   const timestamp = new Date().toISOString();
   const dateKey = timestamp.split('T')[0];
 
-  // Detect concepts for this question
+  // Detect concepts for this question (fallback if no knowledge tokens)
   const concepts = detectQuestionConcepts({ id: questionId, question: questionText, options, sectionId });
 
   // Detect error pattern if wrong
@@ -127,7 +149,22 @@ async function recordDetailedAttempt(body: {
   }));
   const attemptNumber = (historyResult.Item?.totalAttempts || 0) + 1;
 
-  // 1. Record detailed attempt
+  // Extract knowledge token info
+  let knowledgeTokenUsed: string | null = null;
+  let confusionToken: string | null = null;
+
+  if (knowledge) {
+    if (isCorrect) {
+      knowledgeTokenUsed = knowledge.correctToken;
+    } else {
+      // Track what misconception was indicated by the wrong answer
+      confusionToken = knowledge.incorrectTokens[selectedAnswer] || null;
+      // Still track against the correct token for mastery purposes
+      knowledgeTokenUsed = knowledge.correctToken;
+    }
+  }
+
+  // 1. Record detailed attempt (with knowledge token data)
   const attempt: DetailedAttempt = {
     ...analyticsKeys.attempt(childId, timestamp),
     type: 'ATTEMPT',
@@ -148,6 +185,13 @@ async function recordDetailedAttempt(body: {
     aiExplanationRequested,
     createdAt: timestamp,
   };
+
+  // Add knowledge token info to attempt if available
+  if (knowledge) {
+    (attempt as any).knowledgeToken = knowledgeTokenUsed;
+    (attempt as any).confusionToken = confusionToken;
+    (attempt as any).questionTokens = knowledge.questionTokens;
+  }
 
   await db.send(new PutCommand({
     TableName: TABLE_NAME,
@@ -173,12 +217,27 @@ async function recordDetailedAttempt(body: {
   // 6. Update global question analytics
   await updateQuestionAnalytics(questionId, sectionId, selectedAnswer, correctAnswer, isCorrect, timeSpentSeconds, difficulty);
 
+  // 7. NEW: Update knowledge token mastery if knowledge data provided
+  if (knowledge && knowledgeTokenUsed) {
+    await updateKnowledgeTokenMastery(
+      childId,
+      sectionId,
+      knowledgeTokenUsed,
+      isCorrect,
+      confusionToken,
+      timeSpentSeconds,
+      timestamp
+    );
+  }
+
   return success({
     recorded: true,
     isCorrect,
     concepts,
     errorPattern: errorPatternType,
     attemptNumber,
+    knowledgeToken: knowledgeTokenUsed,
+    confusionToken,
   });
 }
 
@@ -268,6 +327,76 @@ async function updateConceptMastery(
       totalAttempts,
       correctAttempts,
       masteryScore,
+      recentAttempts,
+      recentCorrect,
+      trend,
+      avgTimeSeconds: avgTime,
+      lastAttemptAt: timestamp,
+      firstAttemptAt: existing?.firstAttemptAt || timestamp,
+    },
+  }));
+}
+
+/**
+ * Update knowledge token mastery - tracks granular skill performance
+ * e.g., "acute-angle-identification" within the "Angles" section
+ */
+async function updateKnowledgeTokenMastery(
+  childId: string,
+  sectionId: string,
+  tokenId: string,
+  isCorrect: boolean,
+  confusionToken: string | null,
+  timeSeconds: number,
+  timestamp: string
+): Promise<void> {
+  const key = analyticsKeys.knowledgeToken(childId, tokenId);
+  const result = await db.send(new GetCommand({ TableName: TABLE_NAME, Key: key }));
+
+  const existing = result.Item as any;
+  const totalAttempts = (existing?.totalAttempts || 0) + 1;
+  const correctAttempts = (existing?.correctAttempts || 0) + (isCorrect ? 1 : 0);
+  const masteryScore = Math.round((correctAttempts / totalAttempts) * 100);
+
+  // Track confusion patterns (what misconceptions are shown)
+  const confusionPatterns = existing?.confusionPatterns || {};
+  if (confusionToken && !isCorrect) {
+    confusionPatterns[confusionToken] = (confusionPatterns[confusionToken] || 0) + 1;
+  }
+
+  // Track recent performance for trend (last 5 attempts)
+  const recentAttempts = Math.min((existing?.recentAttempts || 0) + 1, 5);
+  let recentCorrect = existing?.recentCorrect || 0;
+  if (totalAttempts <= 5) {
+    recentCorrect += isCorrect ? 1 : 0;
+  } else {
+    // Rolling window approximation
+    recentCorrect = Math.round((recentCorrect * 4 + (isCorrect ? 1 : 0)) / 5 * 5);
+  }
+
+  // Calculate trend
+  const previousScore = existing?.masteryScore || 50;
+  let trend: 'improving' | 'stable' | 'declining' = 'stable';
+  if (masteryScore > previousScore + 10) trend = 'improving';
+  if (masteryScore < previousScore - 10) trend = 'declining';
+
+  // Calculate average time
+  const avgTime = existing?.avgTimeSeconds
+    ? Math.round((existing.avgTimeSeconds * (totalAttempts - 1) + timeSeconds) / totalAttempts)
+    : timeSeconds;
+
+  await db.send(new PutCommand({
+    TableName: TABLE_NAME,
+    Item: {
+      ...key,
+      type: 'TOKEN_MASTERY',
+      childId,
+      tokenId,
+      sectionId,
+      totalAttempts,
+      correctAttempts,
+      masteryScore,
+      confusionPatterns,
       recentAttempts,
       recentCorrect,
       trend,
@@ -455,17 +584,29 @@ async function updateQuestionAnalytics(
 // ============ READ ENDPOINTS ============
 
 async function getConceptMastery(childId: string): Promise<APIGatewayProxyResultV2> {
-  const result = await db.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
-    ExpressionAttributeValues: {
-      ':pk': `CHILD#${childId}`,
-      ':sk': 'CONCEPT#',
-    },
-  }));
+  // Get both concept mastery and knowledge token data
+  const [conceptResult, tokenResult] = await Promise.all([
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'CONCEPT#',
+      },
+    })),
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'TOKEN#',
+      },
+    })),
+  ]);
 
-  const concepts = (result.Items || []).map(item => ({
+  const concepts = (conceptResult.Items || []).map(item => ({
     concept: item.concept,
+    conceptName: formatConceptName(item.concept),
     totalAttempts: item.totalAttempts,
     correctAttempts: item.correctAttempts,
     masteryScore: item.masteryScore,
@@ -477,35 +618,65 @@ async function getConceptMastery(childId: string): Promise<APIGatewayProxyResult
   // Sort by mastery score (lowest first = needs most attention)
   concepts.sort((a, b) => a.masteryScore - b.masteryScore);
 
-  return success({ childId, concepts });
+  // Process knowledge tokens for granular insights
+  const tokenInsights = processKnowledgeTokens(tokenResult.Items || []);
+
+  return success({
+    childId,
+    concepts,
+    knowledgeTokens: tokenInsights,
+  });
 }
 
 async function getWeaknesses(childId: string): Promise<APIGatewayProxyResultV2> {
-  // Get concept mastery
-  const conceptResult = await db.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
-    ExpressionAttributeValues: {
-      ':pk': `CHILD#${childId}`,
-      ':sk': 'CONCEPT#',
-    },
-  }));
+  // Get concept mastery, error patterns, knowledge tokens, and recent attempts in parallel
+  const [conceptResult, errorResult, tokenResult, attemptResult] = await Promise.all([
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'CONCEPT#',
+      },
+    })),
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'ERROR#',
+      },
+    })),
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'TOKEN#',
+      },
+    })),
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'ATTEMPT#',
+      },
+      ScanIndexForward: false,
+      Limit: 50,
+    })),
+  ]);
 
-  // Get error patterns
-  const errorResult = await db.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
-    ExpressionAttributeValues: {
-      ':pk': `CHILD#${childId}`,
-      ':sk': 'ERROR#',
-    },
-  }));
+  const tokens = tokenResult.Items || [];
+  const errors = errorResult.Items || [];
+  const attempts = attemptResult.Items || [];
 
   // Identify weak concepts (below 60% mastery)
   const weakConcepts = (conceptResult.Items || [])
     .filter(item => item.masteryScore < 60)
     .map(item => ({
       concept: item.concept,
+      conceptName: formatConceptName(item.concept),
       masteryScore: item.masteryScore,
       totalAttempts: item.totalAttempts,
       trend: item.trend,
@@ -514,7 +685,7 @@ async function getWeaknesses(childId: string): Promise<APIGatewayProxyResultV2> 
     .sort((a, b) => a.masteryScore - b.masteryScore);
 
   // Get recurring error patterns
-  const errorPatterns = (errorResult.Items || [])
+  const errorPatterns = (errors)
     .filter(item => item.occurrences >= 2)
     .map(item => ({
       pattern: item.patternType,
@@ -525,20 +696,35 @@ async function getWeaknesses(childId: string): Promise<APIGatewayProxyResultV2> 
     }))
     .sort((a, b) => b.occurrences - a.occurrences);
 
-  // Generate actionable insights
+  // Process knowledge tokens for granular skill-level insights
+  const tokenInsights = processKnowledgeTokens(tokens);
+  const strugglingTokens = tokenInsights.filter(t => t.status === 'struggling' || t.status === 'needs-practice');
+
+  // Generate AI insights
+  const aiInsights = generateAIInsights(attempts, tokens, errors);
+
+  // Generate actionable insights (combine traditional + AI)
   const insights: string[] = [];
   if (weakConcepts.length > 0) {
     const worstConcept = weakConcepts[0];
-    insights.push(`Struggling most with "${formatConceptName(worstConcept.concept)}" - only ${worstConcept.masteryScore}% correct`);
+    insights.push(`Struggling most with "${worstConcept.conceptName}" - only ${worstConcept.masteryScore}% correct`);
   }
   if (errorPatterns.length > 0) {
     insights.push(`Common mistake: ${errorPatterns[0].description}`);
+  }
+  // Add AI-generated insights
+  for (const insight of aiInsights.filter(i => i.type === 'misconception').slice(0, 2)) {
+    insights.push(insight.insight);
   }
 
   return success({
     childId,
     weakConcepts,
     errorPatterns,
+    // NEW: Granular skill-level weaknesses from knowledge tokens
+    strugglingSkills: strugglingTokens,
+    // NEW: AI-generated insights
+    aiInsights,
     insights,
     summary: generateWeaknessSummary(weakConcepts, errorPatterns),
   });
@@ -670,9 +856,118 @@ async function getQuestionAnalytics(questionId: string): Promise<APIGatewayProxy
   });
 }
 
+/**
+ * Get knowledge token mastery data for a child
+ * Returns granular skill-level performance and confusion patterns
+ */
+async function getKnowledgeTokenMastery(childId: string): Promise<APIGatewayProxyResultV2> {
+  const result = await db.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+    ExpressionAttributeValues: {
+      ':pk': `CHILD#${childId}`,
+      ':sk': 'TOKEN#',
+    },
+  }));
+
+  const tokens = processKnowledgeTokens(result.Items || []);
+
+  // Group by section for easier display
+  const bySection: Record<string, typeof tokens> = {};
+  for (const token of tokens) {
+    const section = token.sectionId || 'unknown';
+    if (!bySection[section]) {
+      bySection[section] = [];
+    }
+    bySection[section].push(token);
+  }
+
+  // Calculate overall stats
+  const totalTokens = tokens.length;
+  const masteredTokens = tokens.filter(t => t.status === 'mastered').length;
+  const strugglingTokens = tokens.filter(t => t.status === 'struggling').length;
+
+  return success({
+    childId,
+    tokens,
+    bySection,
+    summary: {
+      totalTokens,
+      masteredTokens,
+      strugglingTokens,
+      overallMastery: totalTokens > 0
+        ? Math.round((masteredTokens / totalTokens) * 100)
+        : 0,
+    },
+  });
+}
+
+/**
+ * Get AI-generated insights for a child
+ * Analyzes all available data to produce actionable insights
+ */
+async function getAIInsights(childId: string): Promise<APIGatewayProxyResultV2> {
+  // Get all relevant data for analysis
+  const [tokenResult, errorResult, attemptResult] = await Promise.all([
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'TOKEN#',
+      },
+    })),
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'ERROR#',
+      },
+    })),
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': `CHILD#${childId}`,
+        ':sk': 'ATTEMPT#',
+      },
+      ScanIndexForward: false,
+      Limit: 100, // More attempts for better analysis
+    })),
+  ]);
+
+  const tokens = tokenResult.Items || [];
+  const errors = errorResult.Items || [];
+  const attempts = attemptResult.Items || [];
+
+  // Generate comprehensive AI insights
+  const insights = generateAIInsights(attempts, tokens, errors);
+
+  // Categorise insights
+  const misconceptions = insights.filter(i => i.type === 'misconception');
+  const strengths = insights.filter(i => i.type === 'strength');
+  const patterns = insights.filter(i => i.type === 'pattern');
+
+  return success({
+    childId,
+    insights,
+    categorised: {
+      misconceptions,
+      strengths,
+      patterns,
+    },
+    summary: {
+      totalInsights: insights.length,
+      highConfidence: insights.filter(i => i.confidence === 'high').length,
+      actionableItems: insights.filter(i => i.suggestedAction).length,
+    },
+  });
+}
+
 async function generateParentReport(childId: string, period: string): Promise<APIGatewayProxyResultV2> {
-  // Get all relevant data
-  const [conceptResult, errorResult, dailyResult] = await Promise.all([
+  // Get all relevant data including knowledge token mastery
+  const [conceptResult, errorResult, dailyResult, tokenResult, attemptResult] = await Promise.all([
     db.send(new QueryCommand({
       TableName: TABLE_NAME,
       KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
@@ -684,10 +979,32 @@ async function generateParentReport(childId: string, period: string): Promise<AP
       ExpressionAttributeValues: { ':pk': `CHILD#${childId}`, ':sk': 'ERROR#' },
     })),
     getDailyStatsForReport(childId, period === 'month' ? 30 : 7),
+    // Get knowledge token mastery data
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: { ':pk': `CHILD#${childId}`, ':sk': 'TOKEN#' },
+    })),
+    // Get recent attempts for AI analysis
+    db.send(new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      ExpressionAttributeValues: { ':pk': `CHILD#${childId}`, ':sk': 'ATTEMPT#' },
+      ScanIndexForward: false, // Most recent first
+      Limit: 50,
+    })),
   ]);
 
   const concepts = conceptResult.Items || [];
   const errors = errorResult.Items || [];
+  const tokens = tokenResult.Items || [];
+  const recentAttempts = attemptResult.Items || [];
+
+  // Process knowledge token data for granular insights
+  const tokenInsights = processKnowledgeTokens(tokens);
+
+  // Generate AI insights from recent attempts
+  const aiInsights = generateAIInsights(recentAttempts, tokens, errors);
 
   // Calculate overall metrics
   const totalAttempts = concepts.reduce((sum, c) => sum + (c.totalAttempts || 0), 0);
@@ -750,8 +1067,28 @@ async function generateParentReport(childId: string, period: string): Promise<AP
     headline = `Making steady progress in their learning journey`;
   }
 
+  // Build AI-generated insights for the key insights array
+  const keyInsights: string[] = [
+    `Attempted ${totalAttempts} questions with ${overallAccuracy}% accuracy`,
+  ];
+
+  // Add strong concepts insight
+  if (strongConcepts.length > 0) {
+    keyInsights.push(`Strongest in: ${strongConcepts.slice(0, 2).map(c => c.conceptName).join(', ')}`);
+  }
+
+  // Add weak concepts insight
+  if (weakConcepts.length > 0) {
+    keyInsights.push(`Needs practice: ${weakConcepts.slice(0, 2).map(c => c.conceptName).join(', ')}`);
+  }
+
+  // Add AI-generated insights
+  for (const insight of aiInsights.slice(0, 3)) {
+    keyInsights.push(insight.insight);
+  }
+
   // Build report
-  const report: ParentReport = {
+  const report = {
     childId,
     childName: '', // Would be populated from child profile
     reportPeriod: {
@@ -761,13 +1098,13 @@ async function generateParentReport(childId: string, period: string): Promise<AP
     summary: {
       overallProgress,
       headline,
-      keyInsights: [
-        `Attempted ${totalAttempts} questions with ${overallAccuracy}% accuracy`,
-        strongConcepts.length > 0 ? `Strongest in: ${strongConcepts.slice(0, 2).map(c => c.conceptName).join(', ')}` : '',
-        weakConcepts.length > 0 ? `Needs practice: ${weakConcepts.slice(0, 2).map(c => c.conceptName).join(', ')}` : '',
-      ].filter(Boolean),
+      keyInsights: keyInsights.filter(Boolean),
     },
     conceptAnalysis,
+    // NEW: Knowledge token breakdown for granular skill insights
+    knowledgeTokenAnalysis: tokenInsights,
+    // NEW: AI-generated insights based on pattern analysis
+    aiInsights,
     learningPatterns: {
       averageSessionLength: dailyResult.avgSessionMinutes || 0,
       preferredDifficulty: 2,
@@ -775,6 +1112,9 @@ async function generateParentReport(childId: string, period: string): Promise<AP
     },
     recommendations,
     achievements: generateAchievements(concepts, dailyResult),
+  } as ParentReport & {
+    knowledgeTokenAnalysis: typeof tokenInsights;
+    aiInsights: typeof aiInsights;
   };
 
   return success(report);
@@ -962,4 +1302,260 @@ async function getDailyStatsForReport(childId: string, days: number): Promise<an
     avgSessionMinutes: daysActive > 0 ? Math.round(totalMinutes / daysActive) : 0,
     daysActive,
   };
+}
+
+// ============ KNOWLEDGE TOKEN PROCESSING ============
+
+interface TokenInsight {
+  tokenId: string;
+  tokenName: string;
+  sectionId: string;
+  masteryScore: number;
+  totalAttempts: number;
+  trend: 'improving' | 'stable' | 'declining';
+  confusionPatterns: { pattern: string; count: number; description: string }[];
+  status: 'mastered' | 'progressing' | 'needs-practice' | 'struggling';
+}
+
+/**
+ * Process knowledge token mastery data into structured insights
+ */
+function processKnowledgeTokens(tokens: any[]): TokenInsight[] {
+  return tokens.map(token => {
+    const masteryScore = token.masteryScore || 0;
+    let status: TokenInsight['status'] = 'progressing';
+    if (masteryScore >= 85) status = 'mastered';
+    else if (masteryScore >= 70) status = 'progressing';
+    else if (masteryScore >= 50) status = 'needs-practice';
+    else status = 'struggling';
+
+    // Process confusion patterns into readable format
+    const confusionPatterns = Object.entries(token.confusionPatterns || {})
+      .map(([pattern, count]) => ({
+        pattern,
+        count: count as number,
+        description: formatConfusionPattern(pattern),
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      tokenId: token.tokenId,
+      tokenName: formatTokenName(token.tokenId),
+      sectionId: token.sectionId || '',
+      masteryScore,
+      totalAttempts: token.totalAttempts || 0,
+      trend: token.trend || 'stable',
+      confusionPatterns,
+      status,
+    };
+  }).sort((a, b) => a.masteryScore - b.masteryScore); // Worst performing first
+}
+
+/**
+ * Format a knowledge token ID into a human-readable name
+ */
+function formatTokenName(tokenId: string): string {
+  const names: Record<string, string> = {
+    // Angle-related tokens
+    'acute-angle-identification': 'Identifying Acute Angles',
+    'right-angle-identification': 'Identifying Right Angles',
+    'obtuse-angle-identification': 'Identifying Obtuse Angles',
+    'reflex-angle-identification': 'Identifying Reflex Angles',
+    'straight-angle-identification': 'Identifying Straight Angles',
+    'angle-addition': 'Adding Angles',
+    'triangle-angle-sum': 'Triangle Angle Sum (180°)',
+    // Confusion patterns
+    'acute-right-confusion': 'Confuses Acute with Right Angles',
+    'acute-obtuse-confusion': 'Confuses Acute with Obtuse Angles',
+    'obtuse-right-confusion': 'Confuses Obtuse with Right Angles',
+    'obtuse-reflex-confusion': 'Confuses Obtuse with Reflex Angles',
+    'reflex-misunderstanding': 'Misunderstands Reflex Angles',
+    'straight-angle-confusion': 'Confuses Straight Angles',
+    // Place value tokens
+    'place-value-ones': 'Ones Place Value',
+    'place-value-tens': 'Tens Place Value',
+    'place-value-hundreds': 'Hundreds Place Value',
+    'place-value-thousands': 'Thousands Place Value',
+    // Rounding tokens
+    'rounding-nearest-10': 'Rounding to Nearest 10',
+    'rounding-nearest-100': 'Rounding to Nearest 100',
+    'rounding-nearest-1000': 'Rounding to Nearest 1000',
+    // Fraction tokens
+    'fraction-identification': 'Identifying Fractions',
+    'numerator-understanding': 'Understanding Numerators',
+    'denominator-understanding': 'Understanding Denominators',
+    'equivalent-fractions': 'Finding Equivalent Fractions',
+  };
+
+  return names[tokenId] || tokenId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+/**
+ * Format a confusion pattern into a parent-friendly description
+ */
+function formatConfusionPattern(pattern: string): string {
+  const descriptions: Record<string, string> = {
+    'acute-right-confusion': 'Thinks acute angles (less than 90°) are right angles (exactly 90°)',
+    'acute-obtuse-confusion': 'Thinks acute angles are obtuse angles (greater than 90°)',
+    'obtuse-right-confusion': 'Confuses obtuse angles with right angles',
+    'obtuse-reflex-confusion': 'Confuses obtuse angles (90-180°) with reflex angles (>180°)',
+    'reflex-misunderstanding': 'Doesn\'t recognise that reflex angles are greater than 180°',
+    'straight-angle-confusion': 'Struggles to identify straight angles (180°)',
+    'rounding-direction-error': 'Rounds in the wrong direction',
+    'place-value-magnitude-confusion': 'Confuses the value of digits in different positions',
+  };
+
+  return descriptions[pattern] || pattern.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// ============ AI INSIGHT GENERATION ============
+
+interface AIInsight {
+  type: 'misconception' | 'strength' | 'pattern' | 'recommendation';
+  insight: string;
+  confidence: 'high' | 'medium' | 'low';
+  relatedTokens?: string[];
+  suggestedAction?: string;
+}
+
+/**
+ * Generate AI-powered insights from learning data
+ * This analyzes patterns in attempts and knowledge tokens to produce actionable insights
+ */
+function generateAIInsights(attempts: any[], tokens: any[], errors: any[]): AIInsight[] {
+  const insights: AIInsight[] = [];
+
+  // 1. Analyze confusion patterns from knowledge tokens
+  const confusionCounts: Record<string, number> = {};
+  for (const token of tokens) {
+    if (token.confusionPatterns) {
+      for (const [pattern, count] of Object.entries(token.confusionPatterns)) {
+        confusionCounts[pattern] = (confusionCounts[pattern] || 0) + (count as number);
+      }
+    }
+  }
+
+  // Generate insights for significant confusion patterns
+  const sortedConfusions = Object.entries(confusionCounts)
+    .sort((a, b) => b[1] - a[1]);
+
+  for (const [pattern, count] of sortedConfusions.slice(0, 3)) {
+    if (count >= 2) {
+      insights.push({
+        type: 'misconception',
+        insight: generateMisconceptionInsight(pattern, count),
+        confidence: count >= 5 ? 'high' : count >= 3 ? 'medium' : 'low',
+        relatedTokens: [pattern],
+        suggestedAction: generateMisconceptionAction(pattern),
+      });
+    }
+  }
+
+  // 2. Identify struggling tokens
+  const strugglingTokens = tokens.filter(t => t.masteryScore < 50 && t.totalAttempts >= 3);
+  for (const token of strugglingTokens.slice(0, 2)) {
+    insights.push({
+      type: 'pattern',
+      insight: `Consistently struggling with ${formatTokenName(token.tokenId)} (${token.masteryScore}% accuracy after ${token.totalAttempts} attempts)`,
+      confidence: 'high',
+      relatedTokens: [token.tokenId],
+      suggestedAction: `Focus practice specifically on ${formatTokenName(token.tokenId).toLowerCase()} questions`,
+    });
+  }
+
+  // 3. Identify mastered areas (strengths)
+  const masteredTokens = tokens.filter(t => t.masteryScore >= 85 && t.totalAttempts >= 3);
+  if (masteredTokens.length > 0) {
+    const masteredNames = masteredTokens.slice(0, 3).map(t => formatTokenName(t.tokenId));
+    insights.push({
+      type: 'strength',
+      insight: `Shows strong understanding of ${masteredNames.join(', ')}`,
+      confidence: 'high',
+      relatedTokens: masteredTokens.slice(0, 3).map(t => t.tokenId),
+    });
+  }
+
+  // 4. Analyze recent attempt patterns
+  const recentWrong = attempts.filter(a => !a.isCorrect).slice(0, 20);
+  if (recentWrong.length >= 5) {
+    // Look for time-based patterns
+    const avgTimeWrong = recentWrong.reduce((sum, a) => sum + (a.timeSpentSeconds || 0), 0) / recentWrong.length;
+    const recentCorrect = attempts.filter(a => a.isCorrect).slice(0, 20);
+    const avgTimeCorrect = recentCorrect.length > 0
+      ? recentCorrect.reduce((sum, a) => sum + (a.timeSpentSeconds || 0), 0) / recentCorrect.length
+      : avgTimeWrong;
+
+    if (avgTimeWrong < avgTimeCorrect * 0.5) {
+      insights.push({
+        type: 'pattern',
+        insight: 'Tends to answer too quickly on questions they get wrong - encourage taking more time to read carefully',
+        confidence: 'medium',
+        suggestedAction: 'Remind them to read the question twice before answering',
+      });
+    } else if (avgTimeWrong > avgTimeCorrect * 2) {
+      insights.push({
+        type: 'pattern',
+        insight: 'Spends a long time on questions they get wrong - may indicate confusion rather than carelessness',
+        confidence: 'medium',
+        suggestedAction: 'Focus on building foundational understanding rather than more practice',
+      });
+    }
+  }
+
+  // 5. Check for improving trends
+  const improvingTokens = tokens.filter(t => t.trend === 'improving');
+  if (improvingTokens.length > 0) {
+    insights.push({
+      type: 'strength',
+      insight: `Showing improvement in ${improvingTokens.length} area(s) including ${formatTokenName(improvingTokens[0].tokenId)}`,
+      confidence: 'high',
+      relatedTokens: improvingTokens.slice(0, 3).map(t => t.tokenId),
+    });
+  }
+
+  // 6. Check for declining trends
+  const decliningTokens = tokens.filter(t => t.trend === 'declining');
+  if (decliningTokens.length > 0) {
+    insights.push({
+      type: 'pattern',
+      insight: `Performance declining in ${formatTokenName(decliningTokens[0].tokenId)} - may need revision`,
+      confidence: 'medium',
+      relatedTokens: decliningTokens.slice(0, 2).map(t => t.tokenId),
+      suggestedAction: 'Review the basics of this concept before attempting more questions',
+    });
+  }
+
+  return insights;
+}
+
+/**
+ * Generate a parent-friendly insight about a specific misconception
+ */
+function generateMisconceptionInsight(pattern: string, count: number): string {
+  const insights: Record<string, string> = {
+    'acute-right-confusion': `Your child often confuses acute angles with right angles. They may think any "small" angle is 90°. This happened ${count} times.`,
+    'acute-obtuse-confusion': `Your child sometimes mixes up acute and obtuse angles. They're not yet confident with the 90° boundary. This happened ${count} times.`,
+    'obtuse-reflex-confusion': `Your child confuses obtuse angles (90-180°) with reflex angles (over 180°). They may need help visualising angles over 180°.`,
+    'reflex-misunderstanding': `Your child struggles to recognise reflex angles - the ones that go the "long way round" (over 180°).`,
+    'rounding-direction-error': `Your child often rounds in the wrong direction. They may need to practise the "5 or more, round up" rule.`,
+    'place-value-magnitude-confusion': `Your child confuses which digit is worth more in large numbers. A place value chart would help.`,
+  };
+
+  return insights[pattern] || `Recurring difficulty with ${formatConfusionPattern(pattern).toLowerCase()} (${count} occurrences)`;
+}
+
+/**
+ * Generate actionable advice for addressing a specific misconception
+ */
+function generateMisconceptionAction(pattern: string): string {
+  const actions: Record<string, string> = {
+    'acute-right-confusion': 'Use a set square to show exactly 90°, then compare smaller angles to it',
+    'acute-obtuse-confusion': 'Draw a right angle as the "dividing line" - acute is smaller, obtuse is bigger',
+    'obtuse-reflex-confusion': 'Practise with a full turn (360°) and show how reflex angles are "more than halfway round"',
+    'reflex-misunderstanding': 'Use a clock face to show angles - reflex angles go past 6 o\'clock',
+    'rounding-direction-error': 'Create a number line and practise finding "which ten is closer?"',
+    'place-value-magnitude-confusion': 'Use base-10 blocks or draw place value columns to show digit values',
+  };
+
+  return actions[pattern] || 'Practise with simpler examples and build up gradually';
 }
