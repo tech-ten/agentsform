@@ -108,6 +108,126 @@ When comparing large numbers, start from the left and compare digit by digit.`,
                   correctAnswer: 2,
                   explanation: 'Look at the thousands digit (7). Since 7 ≥ 5, round up to 850,000.',
                   difficulty: 3
+                },
+                {
+                  id: 'VCMNA186-006',
+                  question: 'What is the place value of 5 in 258,146?',
+                  options: ['5,000', '50,000', '500', '500,000'],
+                  correctAnswer: 1,
+                  explanation: 'The 5 is in the ten thousands place, so its value is 50,000.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA186-007',
+                  question: 'Order from smallest to largest: 345,678 | 354,678 | 345,768',
+                  options: ['345,678, 345,768, 354,678', '345,768, 345,678, 354,678', '354,678, 345,768, 345,678', '345,678, 354,678, 345,768'],
+                  correctAnswer: 0,
+                  explanation: 'Compare left to right: 345,678 < 345,768 < 354,678',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-008',
+                  question: 'What number is 100,000 less than 567,234?',
+                  options: ['467,234', '566,234', '557,234', '477,234'],
+                  correctAnswer: 0,
+                  explanation: 'Subtracting 100,000 changes the hundred thousands digit: 567,234 - 100,000 = 467,234',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-009',
+                  question: 'How do you write 408,052 in words?',
+                  options: ['Four hundred and eight thousand and fifty-two', 'Forty-eight thousand and fifty-two', 'Four hundred eight thousand fifty-two', 'Four million eight thousand and fifty-two'],
+                  correctAnswer: 0,
+                  explanation: '408 thousand = four hundred and eight thousand, 052 = and fifty-two',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-010',
+                  question: 'Which digit is in the hundred thousands place in 923,456?',
+                  options: ['9', '2', '3', '4'],
+                  correctAnswer: 0,
+                  explanation: 'Reading from left to right: 9 is in the hundred thousands place.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA186-011',
+                  question: 'What is 50,000 + 6,000 + 400 + 30 + 7?',
+                  options: ['56,437', '506,437', '5,643,007', '564,307'],
+                  correctAnswer: 0,
+                  explanation: 'Add each place value: 50,000 + 6,000 + 400 + 30 + 7 = 56,437',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA186-012',
+                  question: 'Round 463,518 to the nearest hundred thousand',
+                  options: ['400,000', '500,000', '460,000', '470,000'],
+                  correctAnswer: 1,
+                  explanation: 'Look at the ten thousands digit (6). Since 6 ≥ 5, round up to 500,000.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-013',
+                  question: 'Which number is between 234,567 and 243,567?',
+                  options: ['233,567', '244,567', '240,000', '230,000'],
+                  correctAnswer: 2,
+                  explanation: '240,000 is greater than 234,567 and less than 243,567.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-014',
+                  question: 'What is the difference between 500,000 and 499,999?',
+                  options: ['1', '10', '100', '1,000'],
+                  correctAnswer: 0,
+                  explanation: '500,000 - 499,999 = 1. These are consecutive numbers.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA186-015',
+                  question: 'How many hundreds are in 45,600?',
+                  options: ['456', '45', '6', '4,560'],
+                  correctAnswer: 0,
+                  explanation: '45,600 ÷ 100 = 456 hundreds',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA186-016',
+                  question: 'Which number has 8 in the thousands place?',
+                  options: ['180,234', '108,234', '801,234', '218,034'],
+                  correctAnswer: 3,
+                  explanation: 'In 218,034, the 8 is in the thousands place (8,000).',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-017',
+                  question: 'What is 789,012 rounded to the nearest thousand?',
+                  options: ['789,000', '790,000', '788,000', '800,000'],
+                  correctAnswer: 0,
+                  explanation: 'Look at the hundreds digit (0). Since 0 < 5, round down to 789,000.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-018',
+                  question: 'Which is the smallest 6-digit number?',
+                  options: ['999,999', '100,000', '100,001', '99,999'],
+                  correctAnswer: 1,
+                  explanation: '100,000 is the smallest 6-digit number. 99,999 has only 5 digits.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-019',
+                  question: 'What is 300,000 + 40,000 + 5,000 + 600 + 70 + 8?',
+                  options: ['345,678', '354,678', '3,456,780', '34,567,800'],
+                  correctAnswer: 0,
+                  explanation: 'Add each place value to get 345,678.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA186-020',
+                  question: 'The population of a town is 284,953. What is this rounded to the nearest ten thousand?',
+                  options: ['280,000', '285,000', '290,000', '300,000'],
+                  correctAnswer: 0,
+                  explanation: 'Look at the thousands digit (4). Since 4 < 5, round down to 280,000.',
+                  difficulty: 3
                 }
               ]
             },
@@ -203,6 +323,126 @@ If 3 is a **factor** of 12, then 12 is a **multiple** of 3. They're like two sid
                   correctAnswer: 0,
                   explanation: 'Multiples of 4: 4,8,12,16... Multiples of 6: 6,12,18... The first common one is 12.',
                   difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-006',
+                  question: 'List all the factors of 18.',
+                  options: ['1, 2, 3, 6, 9, 18', '1, 2, 3, 6, 18', '2, 3, 6, 9', '1, 2, 9, 18'],
+                  correctAnswer: 0,
+                  explanation: 'Factor pairs: 1×18, 2×9, 3×6. So factors are 1, 2, 3, 6, 9, 18.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA181-007',
+                  question: 'What is the 9th multiple of 7?',
+                  options: ['56', '63', '70', '77'],
+                  correctAnswer: 1,
+                  explanation: '7 × 9 = 63',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA181-008',
+                  question: 'Is 45 a multiple of 9?',
+                  options: ['Yes, because 9 × 5 = 45', 'No, because 45 ÷ 9 has a remainder', 'Yes, because 45 ends in 5', 'No, because 45 is odd'],
+                  correctAnswer: 0,
+                  explanation: '45 ÷ 9 = 5 exactly, so 45 is a multiple of 9.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA181-009',
+                  question: 'Which number is a common factor of 15 and 25?',
+                  options: ['3', '5', '15', '25'],
+                  correctAnswer: 1,
+                  explanation: 'Factors of 15: 1, 3, 5, 15. Factors of 25: 1, 5, 25. Common factors: 1 and 5.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-010',
+                  question: 'What is the smallest common multiple of 3 and 5?',
+                  options: ['8', '10', '15', '30'],
+                  correctAnswer: 2,
+                  explanation: 'Multiples of 3: 3, 6, 9, 12, 15... Multiples of 5: 5, 10, 15... First common: 15.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-011',
+                  question: 'A number has exactly 2 factors. What type of number is it?',
+                  options: ['Even number', 'Odd number', 'Prime number', 'Composite number'],
+                  correctAnswer: 2,
+                  explanation: 'A prime number has exactly 2 factors: 1 and itself.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-012',
+                  question: 'Which of these numbers is NOT a multiple of 6?',
+                  options: ['24', '36', '44', '54'],
+                  correctAnswer: 2,
+                  explanation: '44 ÷ 6 = 7 remainder 2. So 44 is not a multiple of 6.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA181-013',
+                  question: 'What is the greatest common factor of 16 and 24?',
+                  options: ['4', '6', '8', '12'],
+                  correctAnswer: 2,
+                  explanation: 'Factors of 16: 1,2,4,8,16. Factors of 24: 1,2,3,4,6,8,12,24. GCF = 8.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-014',
+                  question: 'How many factors does 1 have?',
+                  options: ['0', '1', '2', '3'],
+                  correctAnswer: 1,
+                  explanation: '1 has only one factor: itself (1).',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-015',
+                  question: 'What is the lowest common multiple of 8 and 12?',
+                  options: ['16', '24', '48', '96'],
+                  correctAnswer: 1,
+                  explanation: 'Multiples of 8: 8, 16, 24... Multiples of 12: 12, 24... LCM = 24.',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA181-016',
+                  question: 'Which of these is a factor of every number?',
+                  options: ['0', '1', '2', '10'],
+                  correctAnswer: 1,
+                  explanation: '1 is a factor of every number because every number ÷ 1 = itself.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA181-017',
+                  question: 'If 7 is a factor of a number, what must also be factors?',
+                  options: ['2 and 14', '1 and 7', '3 and 7', '7 and 14'],
+                  correctAnswer: 1,
+                  explanation: 'Every number has 1 and itself as factors. If 7 is a factor, then 1 and the number itself are also factors.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA181-018',
+                  question: 'What is the product of all factors of 6?',
+                  options: ['12', '18', '36', '72'],
+                  correctAnswer: 2,
+                  explanation: 'Factors of 6: 1, 2, 3, 6. Product: 1 × 2 × 3 × 6 = 36.',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA181-019',
+                  question: 'Which pair of numbers has a GCF of 1?',
+                  options: ['6 and 9', '8 and 12', '7 and 11', '10 and 15'],
+                  correctAnswer: 2,
+                  explanation: '7 and 11 are both prime numbers with no common factors except 1.',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA181-020',
+                  question: 'Eggs come in boxes of 6. Bread rolls come in packs of 8. What is the smallest number where you have equal eggs and rolls?',
+                  options: ['14', '24', '48', '96'],
+                  correctAnswer: 1,
+                  explanation: 'LCM of 6 and 8: Multiples of 6: 6,12,18,24... Multiples of 8: 8,16,24... LCM = 24.',
+                  difficulty: 3
                 }
               ]
             }
@@ -300,6 +540,126 @@ Break the number into parts:
                   correctAnswer: 0,
                   explanation: '99×15 = (100×15) - 15 = 1500 - 15 = 1,485',
                   difficulty: 3
+                },
+                {
+                  id: 'VCMNA183-006',
+                  question: 'What is 234 × 5?',
+                  options: ['1,070', '1,170', '1,270', '1,370'],
+                  correctAnswer: 1,
+                  explanation: '234 × 5 = 234 × 10 ÷ 2 = 2340 ÷ 2 = 1,170',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA183-007',
+                  question: 'Calculate 56 × 11',
+                  options: ['606', '616', '626', '636'],
+                  correctAnswer: 1,
+                  explanation: '56 × 11 = 56 × 10 + 56 = 560 + 56 = 616',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA183-008',
+                  question: 'What is 125 × 8?',
+                  options: ['900', '1,000', '1,100', '1,200'],
+                  correctAnswer: 1,
+                  explanation: '125 × 8 = 1,000 (125 × 8 is a useful fact to remember!)',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-009',
+                  question: 'A farmer plants 45 rows of trees with 23 trees in each row. How many trees in total?',
+                  options: ['935', '1,015', '1,035', '1,135'],
+                  correctAnswer: 2,
+                  explanation: '45 × 23 = 45 × 20 + 45 × 3 = 900 + 135 = 1,035',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-010',
+                  question: 'What is 50 × 48?',
+                  options: ['2,200', '2,300', '2,400', '2,500'],
+                  correctAnswer: 2,
+                  explanation: '50 × 48 = 100 × 24 = 2,400',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-011',
+                  question: 'Calculate 67 × 9',
+                  options: ['593', '603', '613', '623'],
+                  correctAnswer: 1,
+                  explanation: '67 × 9 = 67 × 10 - 67 = 670 - 67 = 603',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-012',
+                  question: 'What is 15 × 16?',
+                  options: ['220', '230', '240', '250'],
+                  correctAnswer: 2,
+                  explanation: '15 × 16 = 15 × 4 × 4 = 60 × 4 = 240',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-013',
+                  question: 'A box contains 144 pencils. How many pencils in 7 boxes?',
+                  options: ['988', '1,008', '1,028', '1,048'],
+                  correctAnswer: 1,
+                  explanation: '144 × 7 = 140 × 7 + 4 × 7 = 980 + 28 = 1,008',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-014',
+                  question: 'What is 199 × 6?',
+                  options: ['1,184', '1,194', '1,204', '1,214'],
+                  correctAnswer: 1,
+                  explanation: '199 × 6 = 200 × 6 - 6 = 1,200 - 6 = 1,194',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-015',
+                  question: 'Calculate 35 × 14',
+                  options: ['470', '480', '490', '500'],
+                  correctAnswer: 2,
+                  explanation: '35 × 14 = 35 × 10 + 35 × 4 = 350 + 140 = 490',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-016',
+                  question: 'What is 250 × 12?',
+                  options: ['2,800', '2,900', '3,000', '3,100'],
+                  correctAnswer: 2,
+                  explanation: '250 × 12 = 250 × 4 × 3 = 1,000 × 3 = 3,000',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA183-017',
+                  question: 'A cinema has 32 rows with 25 seats each. What is the total capacity?',
+                  options: ['750', '800', '850', '900'],
+                  correctAnswer: 1,
+                  explanation: '32 × 25 = 32 × 100 ÷ 4 = 3,200 ÷ 4 = 800',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA183-018',
+                  question: 'What is 48 × 25?',
+                  options: ['1,100', '1,200', '1,300', '1,400'],
+                  correctAnswer: 1,
+                  explanation: '48 × 25 = 48 × 100 ÷ 4 = 4,800 ÷ 4 = 1,200',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA183-019',
+                  question: 'Calculate 76 × 15',
+                  options: ['1,120', '1,140', '1,160', '1,180'],
+                  correctAnswer: 1,
+                  explanation: '76 × 15 = 76 × 10 + 76 × 5 = 760 + 380 = 1,140',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA183-020',
+                  question: 'A book has 286 pages. If a library has 15 copies, how many pages in total?',
+                  options: ['4,190', '4,290', '4,390', '4,490'],
+                  correctAnswer: 1,
+                  explanation: '286 × 15 = 286 × 10 + 286 × 5 = 2,860 + 1,430 = 4,290',
+                  difficulty: 3
                 }
               ]
             },
@@ -383,6 +743,126 @@ When you share 17 lollies among 5 friends:
                   options: ['3', '4', '5', '6'],
                   correctAnswer: 2,
                   explanation: '8 × 21 = 168, and 173 - 168 = 5',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA184-006',
+                  question: 'What is 35 ÷ 4?',
+                  options: ['7 r 3', '8 r 2', '8 r 3', '9 r 1'],
+                  correctAnswer: 2,
+                  explanation: '4 × 8 = 32, and 35 - 32 = 3. So 35 ÷ 4 = 8 r 3',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA184-007',
+                  question: 'What is 52 ÷ 6?',
+                  options: ['8 r 2', '8 r 4', '9 r 2', '9 r 4'],
+                  correctAnswer: 1,
+                  explanation: '6 × 8 = 48, and 52 - 48 = 4. So 52 ÷ 6 = 8 r 4',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA184-008',
+                  question: '67 children need to travel by minibus. Each minibus holds 9 children. How many minibuses are needed?',
+                  options: ['7', '8', '9', '10'],
+                  correctAnswer: 1,
+                  explanation: '67 ÷ 9 = 7 r 4. But we need to round UP for all children, so 8 minibuses.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-009',
+                  question: 'What is 100 ÷ 7?',
+                  options: ['14 r 1', '14 r 2', '15 r 1', '15 r 5'],
+                  correctAnswer: 1,
+                  explanation: '7 × 14 = 98, and 100 - 98 = 2. So 100 ÷ 7 = 14 r 2',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-010',
+                  question: 'A rope is 95 metres long. It is cut into 8-metre pieces. How many metres are left over?',
+                  options: ['5', '6', '7', '8'],
+                  correctAnswer: 2,
+                  explanation: '95 ÷ 8 = 11 r 7. There are 7 metres left over.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-011',
+                  question: 'What is 145 ÷ 6?',
+                  options: ['23 r 7', '24 r 1', '24 r 2', '25 r 1'],
+                  correctAnswer: 1,
+                  explanation: '6 × 24 = 144, and 145 - 144 = 1. So 145 ÷ 6 = 24 r 1',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-012',
+                  question: 'If you divide a number by 5 and get a remainder of 7, what is wrong?',
+                  options: ['Nothing is wrong', 'The remainder must be less than 5', 'The quotient is too small', 'You forgot to carry'],
+                  correctAnswer: 1,
+                  explanation: 'The remainder must always be less than the divisor. If dividing by 5, the remainder can only be 0, 1, 2, 3, or 4.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-013',
+                  question: 'What is 234 ÷ 9?',
+                  options: ['25 r 9', '26 r 0', '26 r 1', '27 r 1'],
+                  correctAnswer: 1,
+                  explanation: '9 × 26 = 234 exactly. So 234 ÷ 9 = 26 with no remainder.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-014',
+                  question: 'A farmer has 175 eggs to pack in cartons of 12. How many full cartons can be made?',
+                  options: ['14', '15', '16', '17'],
+                  correctAnswer: 0,
+                  explanation: '175 ÷ 12 = 14 r 7. Only 14 full cartons can be made.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-015',
+                  question: 'What is 500 ÷ 7?',
+                  options: ['70 r 10', '71 r 2', '71 r 3', '72 r 1'],
+                  correctAnswer: 2,
+                  explanation: '7 × 71 = 497, and 500 - 497 = 3. So 500 ÷ 7 = 71 r 3',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA184-016',
+                  question: 'Which division gives the largest remainder?',
+                  options: ['50 ÷ 6', '50 ÷ 7', '50 ÷ 8', '50 ÷ 9'],
+                  correctAnswer: 2,
+                  explanation: '50÷6=8r2, 50÷7=7r1, 50÷8=6r2, 50÷9=5r5. The largest remainder is 5.',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA184-017',
+                  question: 'If 247 ÷ ? = 35 r 2, what is the divisor?',
+                  options: ['6', '7', '8', '9'],
+                  correctAnswer: 1,
+                  explanation: '? × 35 + 2 = 247, so ? × 35 = 245, and ? = 245 ÷ 35 = 7',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA184-018',
+                  question: 'What is 1,000 ÷ 9?',
+                  options: ['110 r 10', '111 r 1', '111 r 2', '112 r 0'],
+                  correctAnswer: 1,
+                  explanation: '9 × 111 = 999, and 1000 - 999 = 1. So 1000 ÷ 9 = 111 r 1',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA184-019',
+                  question: 'A class of 29 students needs to form teams of 4. How many students will not be in a complete team?',
+                  options: ['0', '1', '2', '3'],
+                  correctAnswer: 1,
+                  explanation: '29 ÷ 4 = 7 r 1. One student will be left over.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA184-020',
+                  question: 'What is 365 ÷ 7? (Think: days in a year divided by days in a week)',
+                  options: ['51 r 8', '52 r 0', '52 r 1', '53 r 1'],
+                  correctAnswer: 2,
+                  explanation: '7 × 52 = 364, and 365 - 364 = 1. So 365 ÷ 7 = 52 r 1 (52 complete weeks plus 1 day)',
                   difficulty: 3
                 }
               ]
@@ -478,6 +958,126 @@ Compare fractions to ½:
                   correctAnswer: 1,
                   explanation: '⁵⁄₆ ≈ 0.833, ⁷⁄₈ = 0.875. So ⁷⁄₈ is larger.',
                   difficulty: 3
+                },
+                {
+                  id: 'VCMNA187-006',
+                  question: 'Which unit fraction is largest?',
+                  options: ['⅛', '⅙', '⅕', '¼'],
+                  correctAnswer: 3,
+                  explanation: 'For unit fractions, smaller denominator = larger fraction. ¼ has the smallest denominator.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA187-007',
+                  question: 'Which fraction equals ½?',
+                  options: ['²⁄₅', '³⁄₆', '⁴⁄₆', '³⁄₅'],
+                  correctAnswer: 1,
+                  explanation: '³⁄₆ = 3÷3 / 6÷3 = ½',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA187-008',
+                  question: 'Order from smallest to largest: ¼, ⅔, ½',
+                  options: ['¼, ½, ⅔', '⅔, ½, ¼', '½, ¼, ⅔', '¼, ⅔, ½'],
+                  correctAnswer: 0,
+                  explanation: '¼ = 0.25, ½ = 0.5, ⅔ ≈ 0.67. So ¼ < ½ < ⅔',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-009',
+                  question: 'Which fraction is closest to 1?',
+                  options: ['³⁄₄', '⁴⁄₅', '⁵⁄₆', '⁸⁄₉'],
+                  correctAnswer: 3,
+                  explanation: '⁸⁄₉ is closest to 1 because it is only ¹⁄₉ away from 1.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-010',
+                  question: 'Is ²⁄₃ greater than, less than, or equal to ³⁄₄?',
+                  options: ['Greater than', 'Less than', 'Equal to', 'Cannot compare'],
+                  correctAnswer: 1,
+                  explanation: '²⁄₃ = ⁸⁄₁₂ and ³⁄₄ = ⁹⁄₁₂. Since 8 < 9, ²⁄₃ < ³⁄₄',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-011',
+                  question: 'Which fraction is exactly halfway between 0 and ½?',
+                  options: ['⅛', '¼', '⅓', '⅖'],
+                  correctAnswer: 1,
+                  explanation: 'Halfway between 0 and ½ is ¼ (since ¼ + ¼ = ½)',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-012',
+                  question: 'Which fraction is less than ⅓?',
+                  options: ['²⁄₅', '³⁄₈', '¼', '⅖'],
+                  correctAnswer: 2,
+                  explanation: '⅓ ≈ 0.33, and ¼ = 0.25. Since 0.25 < 0.33, ¼ < ⅓',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-013',
+                  question: 'Order these fractions: ²⁄₃, ¾, ⁵⁄₆ from smallest to largest',
+                  options: ['²⁄₃, ¾, ⁵⁄₆', '¾, ²⁄₃, ⁵⁄₆', '⁵⁄₆, ¾, ²⁄₃', '²⁄₃, ⁵⁄₆, ¾'],
+                  correctAnswer: 0,
+                  explanation: '²⁄₃ ≈ 0.67, ¾ = 0.75, ⁵⁄₆ ≈ 0.83. So ²⁄₃ < ¾ < ⁵⁄₆',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA187-014',
+                  question: 'Which pair of fractions are equivalent?',
+                  options: ['²⁄₃ and ⁴⁄₅', '³⁄₄ and ⁶⁄₈', '½ and ³⁄₅', '¼ and ²⁄₆'],
+                  correctAnswer: 1,
+                  explanation: '³⁄₄ = ⁶⁄₈ (multiply both parts by 2)',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-015',
+                  question: 'On a number line, which fraction comes just after ½?',
+                  options: ['⁷⁄₁₀', '⁴⁄₁₀', '⁶⁄₁₀', '³⁄₁₀'],
+                  correctAnswer: 2,
+                  explanation: '½ = ⁵⁄₁₀, and the next tenth is ⁶⁄₁₀',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-016',
+                  question: 'What fraction is ¼ more than ½?',
+                  options: ['½', '¾', '⅔', '⅝'],
+                  correctAnswer: 1,
+                  explanation: '½ + ¼ = ²⁄₄ + ¼ = ¾',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-017',
+                  question: 'Which is larger: ⁴⁄₇ or ⁵⁄₉?',
+                  options: ['⁴⁄₇', '⁵⁄₉', 'They are equal', 'Cannot compare'],
+                  correctAnswer: 0,
+                  explanation: '⁴⁄₇ ≈ 0.571 and ⁵⁄₉ ≈ 0.556. So ⁴⁄₇ > ⁵⁄₉',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA187-018',
+                  question: 'If you cut a pizza into 8 equal slices and eat 3, what fraction is left?',
+                  options: ['³⁄₈', '⁵⁄₈', '⅜', '⁸⁄₅'],
+                  correctAnswer: 1,
+                  explanation: 'Started with ⁸⁄₈, ate ³⁄₈, so ⁸⁄₈ - ³⁄₈ = ⁵⁄₈ left',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA187-019',
+                  question: 'Which fraction is exactly ¼ less than 1?',
+                  options: ['½', '⅔', '¾', '⅘'],
+                  correctAnswer: 2,
+                  explanation: '1 - ¼ = ⁴⁄₄ - ¼ = ¾',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA187-020',
+                  question: 'Arrange in order from smallest: ⁵⁄₁₂, ⅓, ½',
+                  options: ['⅓, ⁵⁄₁₂, ½', '⁵⁄₁₂, ⅓, ½', '½, ⅓, ⁵⁄₁₂', '⅓, ½, ⁵⁄₁₂'],
+                  correctAnswer: 0,
+                  explanation: '⅓ = ⁴⁄₁₂, ⁵⁄₁₂ = ⁵⁄₁₂, ½ = ⁶⁄₁₂. Order: ⁴⁄₁₂ < ⁵⁄₁₂ < ⁶⁄₁₂',
+                  difficulty: 3
                 }
               ]
             },
@@ -566,6 +1166,126 @@ Decimals are another way to show parts of a whole number, just like fractions!
                   options: ['2.115', '3.15', '2.43', '3.05'],
                   correctAnswer: 1,
                   explanation: '2.80 + 0.35 = 3.15 (line up decimal points)',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMNA190-006',
+                  question: 'What is the place value of 4 in 0.146?',
+                  options: ['4 tenths', '4 hundredths', '4 thousandths', '4 ones'],
+                  correctAnswer: 1,
+                  explanation: 'In 0.146: 1 is tenths, 4 is hundredths, 6 is thousandths.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA190-007',
+                  question: 'Which is smaller: 0.3 or 0.29?',
+                  options: ['0.3', '0.29', 'They are equal', 'Cannot compare'],
+                  correctAnswer: 1,
+                  explanation: '0.3 = 0.30, and 0.30 > 0.29. So 0.29 is smaller.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA190-008',
+                  question: 'Write 0.6 as a fraction.',
+                  options: ['⅙', '⅗', '⁶⁄₁₀', '⁶⁄₁₀₀'],
+                  correctAnswer: 2,
+                  explanation: '0.6 = 6 tenths = ⁶⁄₁₀ = ³⁄₅',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA190-009',
+                  question: 'Order from largest to smallest: 0.45, 0.54, 0.405',
+                  options: ['0.54, 0.45, 0.405', '0.405, 0.45, 0.54', '0.45, 0.54, 0.405', '0.54, 0.405, 0.45'],
+                  correctAnswer: 0,
+                  explanation: '0.540 > 0.450 > 0.405',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-010',
+                  question: 'What is 0.1 + 0.01 + 0.001?',
+                  options: ['0.3', '0.111', '0.012', '1.11'],
+                  correctAnswer: 1,
+                  explanation: '0.100 + 0.010 + 0.001 = 0.111',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-011',
+                  question: 'Round 4.567 to the nearest tenth.',
+                  options: ['4.5', '4.6', '4.57', '5.0'],
+                  correctAnswer: 1,
+                  explanation: 'Look at hundredths (6). Since 6 ≥ 5, round up: 4.6',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-012',
+                  question: 'Which decimal equals ½?',
+                  options: ['0.2', '0.25', '0.5', '0.12'],
+                  correctAnswer: 2,
+                  explanation: '½ = 1 ÷ 2 = 0.5',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMNA190-013',
+                  question: 'What is 1.5 - 0.75?',
+                  options: ['0.25', '0.75', '1.25', '0.85'],
+                  correctAnswer: 1,
+                  explanation: '1.50 - 0.75 = 0.75',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-014',
+                  question: 'Which is between 0.6 and 0.7?',
+                  options: ['0.59', '0.75', '0.65', '0.8'],
+                  correctAnswer: 2,
+                  explanation: '0.60 < 0.65 < 0.70, so 0.65 is between them.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-015',
+                  question: 'How many tenths are in 2.3?',
+                  options: ['3', '23', '2.3', '230'],
+                  correctAnswer: 1,
+                  explanation: '2.3 = 2 ones + 3 tenths = 20 tenths + 3 tenths = 23 tenths',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-016',
+                  question: 'Round 0.849 to the nearest hundredth.',
+                  options: ['0.8', '0.84', '0.85', '0.9'],
+                  correctAnswer: 2,
+                  explanation: 'Look at thousandths (9). Since 9 ≥ 5, round up: 0.85',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-017',
+                  question: 'What is 0.25 × 4?',
+                  options: ['0.5', '1', '1.25', '1.5'],
+                  correctAnswer: 1,
+                  explanation: '0.25 × 4 = 1 (or ¼ × 4 = 1)',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-018',
+                  question: 'Which decimal is closest to 1?',
+                  options: ['0.89', '0.9', '0.99', '0.909'],
+                  correctAnswer: 2,
+                  explanation: '0.99 is only 0.01 away from 1, which is the smallest difference.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-019',
+                  question: 'What is 3.2 × 10?',
+                  options: ['32', '3.20', '0.32', '320'],
+                  correctAnswer: 0,
+                  explanation: 'Multiplying by 10 moves the decimal point one place right: 3.2 → 32',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMNA190-020',
+                  question: 'Express 0.125 as a fraction in simplest form.',
+                  options: ['⅛', '¼', '⅕', '⅓'],
+                  correctAnswer: 0,
+                  explanation: '0.125 = 125/1000 = ⅛',
                   difficulty: 3
                 }
               ]
@@ -672,6 +1392,126 @@ For a rectangular prism (box): **Volume = length × width × height**
                   correctAnswer: 0,
                   explanation: 'Volume = 20 × 15 × 10 = 3,000 cm³ = 3 L (since 1,000 cm³ = 1 L)',
                   difficulty: 3
+                },
+                {
+                  id: 'VCMMG196-006',
+                  question: 'What is the perimeter of a square with sides of 7cm?',
+                  options: ['14 cm', '21 cm', '28 cm', '49 cm'],
+                  correctAnswer: 2,
+                  explanation: 'Perimeter of a square = 4 × side = 4 × 7 = 28 cm',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG196-007',
+                  question: 'What is the area of a square with sides of 9m?',
+                  options: ['18 m²', '36 m²', '81 m²', '324 m²'],
+                  correctAnswer: 2,
+                  explanation: 'Area of a square = side × side = 9 × 9 = 81 m²',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG196-008',
+                  question: 'A rectangular prism is 8cm long, 5cm wide, and 3cm high. What is its volume?',
+                  options: ['16 cm³', '40 cm³', '80 cm³', '120 cm³'],
+                  correctAnswer: 3,
+                  explanation: 'Volume = 8 × 5 × 3 = 120 cm³',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-009',
+                  question: 'A rectangle has a perimeter of 24cm. If the length is 8cm, what is the width?',
+                  options: ['4 cm', '6 cm', '8 cm', '16 cm'],
+                  correctAnswer: 0,
+                  explanation: 'Perimeter = 2(l + w), so 24 = 2(8 + w), 12 = 8 + w, w = 4 cm',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-010',
+                  question: 'How many 1cm cubes fit in a box that is 4cm × 3cm × 2cm?',
+                  options: ['9', '14', '20', '24'],
+                  correctAnswer: 3,
+                  explanation: 'Volume = 4 × 3 × 2 = 24 cm³, so 24 unit cubes fit.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-011',
+                  question: 'A room is 6m by 4m. How much carpet is needed to cover the floor?',
+                  options: ['10 m²', '20 m²', '24 m²', '48 m²'],
+                  correctAnswer: 2,
+                  explanation: 'Area = 6 × 4 = 24 m²',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG196-012',
+                  question: 'A cube has sides of 5cm. What is its volume?',
+                  options: ['15 cm³', '25 cm³', '75 cm³', '125 cm³'],
+                  correctAnswer: 3,
+                  explanation: 'Volume of cube = side³ = 5 × 5 × 5 = 125 cm³',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-013',
+                  question: 'How many millilitres are in a container with volume 500 cm³?',
+                  options: ['5 mL', '50 mL', '500 mL', '5000 mL'],
+                  correctAnswer: 2,
+                  explanation: '1 cm³ = 1 mL, so 500 cm³ = 500 mL',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-014',
+                  question: 'A field has an area of 200 m². If it is 25m long, how wide is it?',
+                  options: ['4 m', '6 m', '8 m', '10 m'],
+                  correctAnswer: 2,
+                  explanation: 'Area = l × w, so 200 = 25 × w, w = 200 ÷ 25 = 8 m',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-015',
+                  question: 'A fence goes around a rectangular paddock 50m by 30m. How long is the fence?',
+                  options: ['80 m', '150 m', '160 m', '1500 m'],
+                  correctAnswer: 2,
+                  explanation: 'Perimeter = 2 × (50 + 30) = 2 × 80 = 160 m',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG196-016',
+                  question: 'A fish tank is 40cm × 25cm × 30cm. What is its capacity in litres?',
+                  options: ['3 L', '30 L', '300 L', '3000 L'],
+                  correctAnswer: 1,
+                  explanation: 'Volume = 40 × 25 × 30 = 30,000 cm³ = 30 L',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMMG196-017',
+                  question: 'Two squares have the same perimeter as a rectangle 12cm by 6cm. What is the side length of each square?',
+                  options: ['6 cm', '9 cm', '12 cm', '18 cm'],
+                  correctAnswer: 1,
+                  explanation: 'Rectangle perimeter = 2(12+6) = 36cm. Square perimeter = 36 ÷ 2 = 18cm per square. Side = 18 ÷ 4 = 4.5cm... Wait, let me recalculate. Actually: If one square has perimeter 36cm, side = 36 ÷ 4 = 9cm',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMMG196-018',
+                  question: 'What is the area of a rectangle with perimeter 30cm if one side is 10cm?',
+                  options: ['25 cm²', '50 cm²', '100 cm²', '150 cm²'],
+                  correctAnswer: 1,
+                  explanation: 'P = 30, one side = 10, so other side = (30 ÷ 2) - 10 = 5. Area = 10 × 5 = 50 cm²',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMMG196-019',
+                  question: 'A cube-shaped box holds 8 litres. What is the length of each side?',
+                  options: ['2 cm', '20 cm', '200 cm', '8 cm'],
+                  correctAnswer: 1,
+                  explanation: '8 L = 8,000 cm³. Cube root of 8,000 = 20. Side = 20 cm.',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMMG196-020',
+                  question: 'A playground is shaped like an L. The long part is 20m × 10m and the short part is 10m × 8m. What is the total area?',
+                  options: ['200 m²', '280 m²', '300 m²', '380 m²'],
+                  correctAnswer: 1,
+                  explanation: 'Total area = (20 × 10) + (10 × 8) = 200 + 80 = 280 m²',
+                  difficulty: 3
                 }
               ]
             }
@@ -762,6 +1602,126 @@ An angle is formed when two lines meet at a point. We measure angles in degrees 
                   options: ['130°', '230°', '310°', '360°'],
                   correctAnswer: 2,
                   explanation: 'A reflex angle and its corresponding angle make 360°. 360° - 50° = 310°',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMMG202-006',
+                  question: 'What type of angle is exactly 90°?',
+                  options: ['Acute', 'Right', 'Obtuse', 'Straight'],
+                  correctAnswer: 1,
+                  explanation: 'A right angle is exactly 90°.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG202-007',
+                  question: 'What type of angle is 180°?',
+                  options: ['Right', 'Obtuse', 'Straight', 'Reflex'],
+                  correctAnswer: 2,
+                  explanation: 'A straight angle is exactly 180°.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG202-008',
+                  question: 'What type of angle is 200°?',
+                  options: ['Acute', 'Obtuse', 'Straight', 'Reflex'],
+                  correctAnswer: 3,
+                  explanation: '200° is between 180° and 360°, so it is a reflex angle.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG202-009',
+                  question: 'Two angles in a triangle are 60° and 80°. What is the third angle?',
+                  options: ['30°', '40°', '50°', '60°'],
+                  correctAnswer: 1,
+                  explanation: 'Triangle angles sum to 180°. 180 - 60 - 80 = 40°',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-010',
+                  question: 'How many degrees are in a full turn?',
+                  options: ['90°', '180°', '270°', '360°'],
+                  correctAnswer: 3,
+                  explanation: 'A full turn (complete rotation) is 360°.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG202-011',
+                  question: 'What is half of a right angle?',
+                  options: ['30°', '45°', '60°', '90°'],
+                  correctAnswer: 1,
+                  explanation: 'A right angle is 90°, so half is 45°.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG202-012',
+                  question: 'The angles of a quadrilateral add up to how many degrees?',
+                  options: ['180°', '270°', '360°', '540°'],
+                  correctAnswer: 2,
+                  explanation: 'The angles in any quadrilateral sum to 360°.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-013',
+                  question: 'An angle is 25° less than a right angle. What is the angle?',
+                  options: ['55°', '65°', '75°', '85°'],
+                  correctAnswer: 1,
+                  explanation: '90° - 25° = 65°',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-014',
+                  question: 'Two angles on a straight line add up to how many degrees?',
+                  options: ['90°', '180°', '270°', '360°'],
+                  correctAnswer: 1,
+                  explanation: 'Angles on a straight line sum to 180°.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-015',
+                  question: 'If one angle on a straight line is 115°, what is the other angle?',
+                  options: ['55°', '65°', '75°', '85°'],
+                  correctAnswer: 1,
+                  explanation: 'Angles on a straight line = 180°. 180 - 115 = 65°',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-016',
+                  question: 'How many right angles make a straight angle?',
+                  options: ['1', '2', '3', '4'],
+                  correctAnswer: 1,
+                  explanation: 'A straight angle is 180° = 2 × 90° = 2 right angles.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-017',
+                  question: 'A rectangle has four angles. Each angle is:',
+                  options: ['45°', '60°', '90°', '120°'],
+                  correctAnswer: 2,
+                  explanation: 'All angles in a rectangle are right angles (90°).',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMMG202-018',
+                  question: 'An equilateral triangle has three equal angles. What is each angle?',
+                  options: ['45°', '60°', '90°', '120°'],
+                  correctAnswer: 1,
+                  explanation: '180° ÷ 3 = 60° for each angle.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-019',
+                  question: 'Which angle is closest to the angle of a slice of pizza cut into 8 equal pieces?',
+                  options: ['30°', '45°', '60°', '90°'],
+                  correctAnswer: 1,
+                  explanation: '360° ÷ 8 = 45° per slice.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMMG202-020',
+                  question: 'Three angles of a quadrilateral are 80°, 100°, and 90°. What is the fourth angle?',
+                  options: ['70°', '80°', '90°', '100°'],
+                  correctAnswer: 2,
+                  explanation: 'Quadrilateral angles = 360°. 360 - 80 - 100 - 90 = 90°',
                   difficulty: 3
                 }
               ]
@@ -859,6 +1819,126 @@ Probability tells us how likely something is to happen, measured from 0 to 1.
                   options: ['1/2', '1/3', '1/4', '1/8'],
                   correctAnswer: 2,
                   explanation: 'Outcomes: HH, HT, TH, TT (4 total). P(HH) = 1/4',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMSP203-006',
+                  question: 'What is the probability of rolling an even number on a die?',
+                  options: ['1/6', '2/6', '3/6', '4/6'],
+                  correctAnswer: 2,
+                  explanation: 'Even numbers: 2, 4, 6 (3 outcomes out of 6). P = 3/6 = 1/2',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMSP203-007',
+                  question: 'What does a probability of 0 mean?',
+                  options: ['Certain to happen', 'Impossible', 'Equal chance', 'Likely to happen'],
+                  correctAnswer: 1,
+                  explanation: 'A probability of 0 means the event is impossible - it will never happen.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMSP203-008',
+                  question: 'What does a probability of 1 mean?',
+                  options: ['Impossible', 'Unlikely', 'Even chance', 'Certain to happen'],
+                  correctAnswer: 3,
+                  explanation: 'A probability of 1 means the event is certain - it will definitely happen.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMSP203-009',
+                  question: 'A spinner has 4 equal sections: red, blue, green, yellow. What is P(red)?',
+                  options: ['1/2', '1/3', '1/4', '1/5'],
+                  correctAnswer: 2,
+                  explanation: '1 red section out of 4 equal sections. P(red) = 1/4',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMSP203-010',
+                  question: 'What is P(rolling a 7) on a standard die?',
+                  options: ['0', '1/6', '1/7', '1'],
+                  correctAnswer: 0,
+                  explanation: 'A standard die only has numbers 1-6. Rolling a 7 is impossible, so P = 0.',
+                  difficulty: 1
+                },
+                {
+                  id: 'VCMSP203-011',
+                  question: 'A bag has 4 red and 6 blue marbles. What is P(not red)?',
+                  options: ['4/10', '6/10', '10/10', '0/10'],
+                  correctAnswer: 1,
+                  explanation: 'P(not red) = P(blue) = 6/10 = 3/5',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-012',
+                  question: 'What is P(rolling a number less than 5) on a die?',
+                  options: ['2/6', '3/6', '4/6', '5/6'],
+                  correctAnswer: 2,
+                  explanation: 'Numbers less than 5: 1, 2, 3, 4 (4 outcomes). P = 4/6 = 2/3',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-013',
+                  question: 'A spinner has 8 equal sections numbered 1-8. What is P(landing on an odd number)?',
+                  options: ['1/8', '2/8', '4/8', '5/8'],
+                  correctAnswer: 2,
+                  explanation: 'Odd numbers: 1, 3, 5, 7 (4 numbers). P = 4/8 = 1/2',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-014',
+                  question: 'In a class of 20, 8 students wear glasses. If a student is picked randomly, what is P(glasses)?',
+                  options: ['8/20', '12/20', '8/12', '20/8'],
+                  correctAnswer: 0,
+                  explanation: '8 students with glasses out of 20 total. P = 8/20 = 2/5',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-015',
+                  question: 'Which probability describes an event that is "likely" to happen?',
+                  options: ['0', '1/4', '3/4', '1'],
+                  correctAnswer: 2,
+                  explanation: '3/4 is greater than 1/2, meaning the event is more likely to happen than not.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-016',
+                  question: 'A bag contains only red marbles. What is P(picking a red marble)?',
+                  options: ['0', '1/2', '1', 'Cannot determine'],
+                  correctAnswer: 2,
+                  explanation: 'If all marbles are red, picking red is certain. P = 1.',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-017',
+                  question: 'What is P(rolling 1 or 6) on a die?',
+                  options: ['1/6', '2/6', '3/6', '6/6'],
+                  correctAnswer: 1,
+                  explanation: 'Two favourable outcomes (1 or 6) out of 6. P = 2/6 = 1/3',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-018',
+                  question: 'A card is drawn from a deck. There are 13 hearts out of 52 cards. What is P(heart)?',
+                  options: ['1/4', '1/13', '13/52', '1/2'],
+                  correctAnswer: 0,
+                  explanation: 'P(heart) = 13/52 = 1/4',
+                  difficulty: 2
+                },
+                {
+                  id: 'VCMSP203-019',
+                  question: 'If you flip a coin 3 times, how many different outcomes are possible?',
+                  options: ['3', '6', '8', '12'],
+                  correctAnswer: 2,
+                  explanation: 'Each flip has 2 outcomes. Total = 2 × 2 × 2 = 8 outcomes.',
+                  difficulty: 3
+                },
+                {
+                  id: 'VCMSP203-020',
+                  question: 'A bag has 2 red, 3 blue, and 5 green balls. What is P(red or blue)?',
+                  options: ['2/10', '3/10', '5/10', '8/10'],
+                  correctAnswer: 2,
+                  explanation: 'Red or blue = 2 + 3 = 5 balls. P = 5/10 = 1/2',
                   difficulty: 3
                 }
               ]
