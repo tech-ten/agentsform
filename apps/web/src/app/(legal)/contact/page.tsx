@@ -25,9 +25,15 @@ export default function ContactPage() {
             </p>
             <a
               href="mailto:tendai@agentsform.ai"
-              className="text-lg font-medium text-black hover:underline"
+              className="text-lg font-medium text-black hover:underline block"
             >
               tendai@agentsform.ai
+            </a>
+            <a
+              href="mailto:mail@agentsformation.com"
+              className="text-sm text-neutral-600 hover:underline block mt-1"
+            >
+              mail@agentsformation.com
             </a>
             <p className="text-sm text-neutral-500 mt-2">
               We typically respond within 24 hours on business days.
