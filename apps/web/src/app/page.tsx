@@ -352,7 +352,7 @@ export default function Home() {
           {/* Copyright */}
           <div className="border-t border-neutral-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-neutral-500">
-              © 2025 SOFTSYS PTY LTD trading as Enhanced Software Systems. All rights reserved.
+              © 2026 SOFTSYS PTY LTD trading as Enhanced Software Systems. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm text-neutral-500">
               <Link href="/privacy" className="hover:text-black transition-colors">Privacy</Link>

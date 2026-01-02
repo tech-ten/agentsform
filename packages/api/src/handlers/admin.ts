@@ -4,7 +4,18 @@ import { db, TABLE_NAME } from '../lib/db';
 import { success, badRequest, forbidden, serverError } from '../lib/response';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+// Lazy initialization of Stripe to avoid errors when key is not set
+let stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!stripe) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+      throw new Error('STRIPE_SECRET_KEY not configured');
+    }
+    stripe = new Stripe(key);
+  }
+  return stripe;
+}
 
 // Admin API key - set via environment variable
 // This decouples admin access from parent Cognito accounts
@@ -196,19 +207,21 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     // GET /admin/payments - List all payments and subscriptions from Stripe
     if (path === '/admin/payments') {
       try {
+        const stripeClient = getStripe();
+
         // Fetch recent payments (charges)
-        const charges = await stripe.charges.list({
+        const charges = await stripeClient.charges.list({
           limit: 100,
         });
 
         // Fetch all subscriptions
-        const subscriptions = await stripe.subscriptions.list({
+        const subscriptions = await stripeClient.subscriptions.list({
           limit: 100,
           status: 'all',
         });
 
         // Fetch all customers
-        const customers = await stripe.customers.list({
+        const customers = await stripeClient.customers.list({
           limit: 100,
         });
 
