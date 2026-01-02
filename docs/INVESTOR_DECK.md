@@ -112,10 +112,38 @@ We use Groq's free tier (LLaMA 3.3 70B) for AI tutoring - same quality as ChatGP
 
 | Allocation | % | Purpose |
 |------------|---|---------|
-| Product Development | 40% | Years 7-12 content, English, Science |
+| Product Development | 40% | Years 7-12 content, English, Science, AI Video |
 | Marketing | 30% | Paid acquisition, school partnerships |
 | Operations | 20% | Customer support, content QA |
 | Reserve | 10% | Contingency |
+
+---
+
+## Product Roadmap
+
+### Q1 2026 (Current) ✅
+- Victorian curriculum Years 3-6 Maths
+- AI tutor with Groq LLaMA 3.3
+- Stripe payments with 14-day trial
+- Admin dashboard with analytics
+
+### Q2 2026
+- English curriculum (Years 3-6)
+- Science curriculum (Years 3-6)
+- Parent mobile app (React Native)
+- Weekly email reports
+
+### Q3 2026
+- Years 7-10 content
+- School bulk licensing
+- Teacher dashboards
+- Custom branded portals
+
+### Q4 2026
+- NSW/QLD curriculum variants
+- AI-generated practice tests
+- **AI-Powered Video Explanations** - Personalized animated videos generated on-demand explaining concepts the child struggled with, using AI voice synthesis and dynamic visual generation
+- Peer tutoring marketplace
 
 ---
 

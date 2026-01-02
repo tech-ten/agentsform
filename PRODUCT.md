@@ -307,7 +307,7 @@ At $5/month subscription = **125x margin** on infrastructure.
 ### Q4 2026
 - [ ] NSW/QLD curriculum variants
 - [ ] AI-generated practice tests
-- [ ] Video explanations
+- [ ] **AI-Powered Video Explanations** - Personalized animated videos generated on-demand explaining concepts the child struggled with, using AI voice synthesis and dynamic visual generation
 - [ ] Peer tutoring marketplace
 
 ---
