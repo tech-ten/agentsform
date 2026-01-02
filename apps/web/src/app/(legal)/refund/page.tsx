@@ -50,7 +50,7 @@ export default function RefundPage() {
               To request a refund:
             </p>
             <ol className="list-decimal pl-6 text-neutral-600 mb-4 space-y-2">
-              <li>Email us at <a href="mailto:mail@agentsformation.com" className="text-black underline">mail@agentsformation.com</a></li>
+              <li>Email us at <a href="mailto:tendai@agentsform.ai" className="text-black underline">tendai@agentsform.ai</a></li>
               <li>Include your account email and reason for the refund request</li>
               <li>We will respond within 2 business days</li>
               <li>Approved refunds are processed within 5-10 business days</li>
@@ -64,7 +64,7 @@ export default function RefundPage() {
             </p>
             <ul className="list-disc pl-6 text-neutral-600 mb-4 space-y-2">
               <li>Go to your Dashboard and click &quot;Manage Subscription&quot;</li>
-              <li>Or contact us at <a href="mailto:mail@agentsformation.com" className="text-black underline">mail@agentsformation.com</a></li>
+              <li>Or contact us at <a href="mailto:tendai@agentsform.ai" className="text-black underline">tendai@agentsform.ai</a></li>
             </ul>
             <p className="text-neutral-600 mb-4">
               Upon cancellation, you retain access to paid features until the end of your
@@ -106,7 +106,7 @@ export default function RefundPage() {
               <p>Trading as Enhanced Software Systems</p>
               <p>ABN: 64 663 472 759</p>
               <p>17 Koomba Crescent, Greenvale VIC 3059, Australia</p>
-              <p>Email: <a href="mailto:mail@agentsformation.com" className="text-black underline">mail@agentsformation.com</a></p>
+              <p>Email: <a href="mailto:tendai@agentsform.ai" className="text-black underline">tendai@agentsform.ai</a></p>
               <p>Phone: <a href="tel:+61410386167" className="text-black underline">+61 410 386 167</a></p>
             </div>
           </section>

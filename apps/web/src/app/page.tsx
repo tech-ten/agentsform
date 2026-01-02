@@ -332,8 +332,8 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-6 text-sm text-neutral-600">
               <div>
                 <p className="font-medium text-black mb-1">Email</p>
-                <a href="mailto:mail@agentsformation.com" className="hover:text-black transition-colors">
-                  mail@agentsformation.com
+                <a href="mailto:tendai@agentsform.ai" className="hover:text-black transition-colors">
+                  tendai@agentsform.ai
                 </a>
               </div>
               <div>

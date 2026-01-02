@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentsForm - AI-Powered Solutions</title>
+  <meta name="description" content="Building intelligent software that adapts to you. AI-powered applications for education, productivity, and beyond.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #fafafa;
+      --text: #111;
+      --muted: #666;
+      --border: #e5e5e5;
+      --accent: #000;
+      --card-bg: #fff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(250, 250, 250, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    nav a {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 20px;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #333;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--card-bg);
+      border-color: var(--muted);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 160px 24px 80px;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-actions .btn {
+      padding: 12px 28px;
+      font-size: 1rem;
+    }
+
+    /* Products Section */
+    .products {
+      padding: 80px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      font-size: 1.125rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card:hover {
+      border-color: var(--muted);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .product-card.tutor .product-icon {
+      background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+    }
+
+    .product-card.coming-soon .product-icon {
+      background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    }
+
+    .product-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      font-size: 0.625rem;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-live {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-soon {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .product-card p {
+      color: var(--muted);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .product-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .product-link svg {
+      transition: transform 0.2s;
+    }
+
+    .product-card:hover .product-link svg {
+      transform: translateX(4px);
+    }
+
+    /* About Section */
+    .about {
+      padding: 80px 24px;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    .about-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .about p {
+      color: var(--muted);
+      font-size: 1.125rem;
+      margin-bottom: 16px;
+    }
+
+    .values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 48px;
+      text-align: left;
+    }
+
+    @media (max-width: 768px) {
+      .values {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .value h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .value p {
+      font-size: 0.9375rem;
+      margin-bottom: 0;
+    }
+
+    /* Footer */
+    footer {
+      padding: 48px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+    }
+
+    @media (max-width: 768px) {
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .footer-brand p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-links h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 8px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 48px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-bottom p {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .footer-legal {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-legal a {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-legal a:hover {
+      color: var(--text);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero h1,
+    .hero p,
+    .hero-actions {
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+
+    .hero p {
+      animation-delay: 0.1s;
+    }
+
+    .hero-actions {
+      animation-delay: 0.2s;
+    }
+
+    .product-card {
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+
+    .product-card:nth-child(1) { animation-delay: 0.1s; }
+    .product-card:nth-child(2) { animation-delay: 0.2s; }
+    .product-card:nth-child(3) { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">A</span>
+        AgentsForm
+      </a>
+      <nav>
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+        <a href="https://tutor.agentsform.ai" class="btn btn-primary">Try StudyMate</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Less structure,<br>more intelligence.</h1>
+      <p>Building AI-powered software that adapts to you. Smart solutions for education, productivity, and everything in between.</p>
+      <div class="hero-actions">
+        <a href="https://tutor.agentsform.ai" class="btn btn-primary">Explore StudyMate</a>
+        <a href="#products" class="btn btn-outline">View Products</a>
+      </div>
+    </section>
+
+    <section class="products" id="products">
+      <div class="section-title">
+        <h2>Our Products</h2>
+        <p>AI-powered applications designed to make a difference</p>
+      </div>
+
+      <div class="products-grid">
+        <a href="https://tutor.agentsform.ai" class="product-card tutor">
+          <div class="product-icon">📚</div>
+          <h3>
+            StudyMate
+            <span class="badge badge-live">Live</span>
+          </h3>
+          <p>AI-powered tutoring for Australian students. Personalised learning aligned with the Australian curriculum from Prep to Year 12. Instant feedback, adaptive difficulty, and explanations that make sense.</p>
+          <span class="product-link">
+            Start learning
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+
+        <div class="product-card coming-soon">
+          <div class="product-icon">🔧</div>
+          <h3>
+            More Coming
+            <span class="badge badge-soon">Soon</span>
+          </h3>
+          <p>We're building more AI-powered tools to help you work smarter. From productivity apps to business automation, stay tuned for what's next.</p>
+          <span class="product-link" style="color: var(--muted);">
+            Coming soon
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="about-inner">
+        <h2>About AgentsForm</h2>
+        <p>We're a Melbourne-based software company building intelligent applications that understand context and adapt to your needs. Our mission is to make AI accessible, practical, and genuinely helpful.</p>
+        <p>Operated by Enhanced Software Systems, a product of SOFTSYS PTY LTD.</p>
+
+        <div class="values">
+          <div class="value">
+            <h3>Australian Made</h3>
+            <p>Designed and built in Melbourne, Australia. We understand local needs and comply with Australian standards.</p>
+          </div>
+          <div class="value">
+            <h3>Privacy First</h3>
+            <p>Your data stays yours. We never sell personal information and follow strict privacy principles.</p>
+          </div>
+          <div class="value">
+            <h3>Practical AI</h3>
+            <p>No hype, just useful tools. We build AI that solves real problems and saves you time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="/" class="logo">
+          <span class="logo-icon">A</span>
+          AgentsForm
+        </a>
+        <p>Building intelligent software that adapts to you. AI-powered applications for education, productivity, and beyond.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="https://tutor.agentsform.ai">StudyMate</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="mailto:tendai@agentsform.ai">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:tendai@agentsform.ai">tendai@agentsform.ai</a></li>
+          <li><a href="tel:+61410386167">+61 410 386 167</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 SOFTSYS PTY LTD trading as Enhanced Software Systems. ABN 64 663 472 759. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="https://tutor.agentsform.ai/privacy">Privacy</a>
+        <a href="https://tutor.agentsform.ai/terms">Terms</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
