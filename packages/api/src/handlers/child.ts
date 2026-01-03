@@ -142,6 +142,48 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         return badRequest('yearLevel must be between 0 (Prep) and 12');
       }
 
+      // Check subscription tier child limits
+      const userResult = await db.send(new GetCommand({
+        TableName: TABLE_NAME,
+        Key: keys.user(userId),
+      }));
+      const tier = userResult.Item?.tier || 'free';
+
+      // Child limits per tier
+      const CHILD_LIMITS: Record<string, number> = {
+        free: 2,
+        explorer: 2,
+        scholar: 5,
+        achiever: 10,
+      };
+      const maxChildren = CHILD_LIMITS[tier] || 2;
+
+      // Count existing children
+      const existingChildren = await db.send(new QueryCommand({
+        TableName: TABLE_NAME,
+        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+        ExpressionAttributeValues: {
+          ':pk': `USER#${userId}`,
+          ':sk': 'CHILD#',
+        },
+        Select: 'COUNT',
+      }));
+      const currentChildCount = existingChildren.Count || 0;
+
+      if (currentChildCount >= maxChildren) {
+        return {
+          statusCode: 403,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            error: `You've reached the maximum of ${maxChildren} children for your ${tier} plan`,
+            limit: maxChildren,
+            current: currentChildCount,
+            tier,
+            upgradeUrl: '/pricing',
+          }),
+        };
+      }
+
       // Generate username from name if not provided (e.g., "Josh M" -> "joshm")
       const baseUsername = (providedUsername || name).toLowerCase().replace(/[^a-z0-9]/g, '');
       let username = baseUsername;
