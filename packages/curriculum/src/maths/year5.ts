@@ -5251,47 +5251,422 @@ For two coin flips: {HH, HT, TH, TT} → 4 outcomes
                   explanation: 'Not red = blue or yellow = 2 + 1 = 3 sections out of 6'
                 }
               ],
+              knowledgeTokens: [
+                {
+                  id: 'probability-concept',
+                  name: 'Probability Concept',
+                  description: 'Understanding probability as a measure of likelihood from 0 to 1',
+                  prerequisites: [],
+                },
+                {
+                  id: 'probability-as-fraction',
+                  name: 'Probability as Fraction',
+                  description: 'Expressing probability as favourable outcomes / total outcomes',
+                  prerequisites: ['probability-concept'],
+                },
+                {
+                  id: 'listing-outcomes',
+                  name: 'Listing Outcomes',
+                  description: 'Identifying all possible outcomes in a chance experiment',
+                  prerequisites: [],
+                },
+                {
+                  id: 'complementary-probability',
+                  name: 'Complementary Probability',
+                  description: 'Understanding P(not A) = 1 - P(A)',
+                  prerequisites: ['probability-as-fraction'],
+                },
+                {
+                  id: 'equally-likely-outcomes',
+                  name: 'Equally Likely Outcomes',
+                  description: 'Recognising when outcomes have the same chance of occurring',
+                  prerequisites: ['probability-concept'],
+                },
+                {
+                  id: 'compound-events',
+                  name: 'Compound Events',
+                  description: 'Finding probability of combined events (e.g., two coin flips)',
+                  prerequisites: ['listing-outcomes', 'probability-as-fraction'],
+                },
+                {
+                  id: 'simplifying-probability',
+                  name: 'Simplifying Probability Fractions',
+                  description: 'Expressing probabilities in simplest form',
+                  prerequisites: ['probability-as-fraction'],
+                },
+                {
+                  id: 'probability-scale',
+                  name: 'Probability Scale',
+                  description: 'Placing events on a scale from impossible (0) to certain (1)',
+                  prerequisites: ['probability-concept'],
+                },
+              ],
               questions: [
+                // Questions 1-4: Basic Probability Concept
                 {
                   id: 'VCMSP203-001',
                   question: 'What is the probability of flipping heads on a fair coin?',
                   options: ['1/4', '1/3', '1/2', '2/3'],
                   correctAnswer: 2,
                   explanation: 'A coin has 2 outcomes (heads, tails). P(heads) = 1/2',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction', 'equally-likely-outcomes'],
+                    correctToken: 'probability-as-fraction',
+                    incorrectTokens: [
+                      'total-outcomes-error',             // Wrong denominator
+                      'total-outcomes-error',             // Wrong denominator
+                      null,                                // Correct
+                      'total-outcomes-error',             // Wrong denominator
+                    ],
+                  },
                 },
                 {
                   id: 'VCMSP203-002',
-                  question: 'What is the probability of rolling a number greater than 4 on a die?',
-                  options: ['1/6', '2/6', '3/6', '4/6'],
-                  correctAnswer: 1,
-                  explanation: 'Numbers greater than 4: 5 and 6 (2 outcomes). P = 2/6 = 1/3',
-                  difficulty: 2
+                  question: 'What is the probability of rolling a 6 on a standard die?',
+                  options: ['1/2', '1/3', '1/4', '1/6'],
+                  correctAnswer: 3,
+                  explanation: 'A die has 6 faces. Only one shows 6. P(6) = 1/6',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction', 'listing-outcomes'],
+                    correctToken: 'probability-as-fraction',
+                    incorrectTokens: [
+                      'total-outcomes-error',             // Thought 2 outcomes
+                      'total-outcomes-error',             // Thought 3 outcomes
+                      'total-outcomes-error',             // Thought 4 outcomes
+                      null,                                // Correct
+                    ],
+                  },
                 },
                 {
                   id: 'VCMSP203-003',
+                  question: 'Which probability means an event is IMPOSSIBLE?',
+                  options: ['0', '1/2', '1', '2'],
+                  correctAnswer: 0,
+                  explanation: 'A probability of 0 means the event can never happen (impossible).',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['probability-concept', 'probability-scale'],
+                    correctToken: 'probability-scale',
+                    incorrectTokens: [
+                      null,                                // Correct
+                      'probability-scale-confusion',      // Even chance
+                      'probability-scale-confusion',      // Certain
+                      'probability-range-error',          // Outside valid range
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-004',
+                  question: 'Which probability means an event is CERTAIN to happen?',
+                  options: ['0', '1/2', '1', '100'],
+                  correctAnswer: 2,
+                  explanation: 'A probability of 1 (or 100%) means the event will definitely happen.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['probability-concept', 'probability-scale'],
+                    correctToken: 'probability-scale',
+                    incorrectTokens: [
+                      'probability-scale-confusion',      // Impossible
+                      'probability-scale-confusion',      // Even chance
+                      null,                                // Correct
+                      'probability-range-error',          // Outside valid range
+                    ],
+                  },
+                },
+                // Questions 5-9: Probability as Fractions
+                {
+                  id: 'VCMSP203-005',
                   question: 'A bag has 3 red, 5 blue, and 2 green balls. What is P(blue)?',
                   options: ['3/10', '5/10', '2/10', '7/10'],
                   correctAnswer: 1,
                   explanation: '5 blue out of 10 total = 5/10 = 1/2',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction'],
+                    correctToken: 'probability-as-fraction',
+                    incorrectTokens: [
+                      'favourable-outcomes-error',        // Chose red count
+                      null,                                // Correct
+                      'favourable-outcomes-error',        // Chose green count
+                      'favourable-outcomes-error',        // Wrong calculation
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMSP203-004',
+                  id: 'VCMSP203-006',
+                  question: 'What is the probability of rolling a number greater than 4 on a die?',
+                  options: ['1/6', '2/6', '3/6', '4/6'],
+                  correctAnswer: 1,
+                  explanation: 'Numbers greater than 4: 5 and 6 (2 outcomes). P = 2/6 = 1/3',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction', 'listing-outcomes'],
+                    correctToken: 'probability-as-fraction',
+                    incorrectTokens: [
+                      'favourable-outcomes-error',        // Counted only 1
+                      null,                                // Correct
+                      'greater-than-vs-at-least',         // Included 4
+                      'favourable-outcomes-error',        // Counted 4 numbers
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-007',
+                  question: 'A spinner has 8 equal sections: 3 red, 2 blue, 3 yellow. What is P(red)?',
+                  options: ['1/8', '3/8', '5/8', '3/3'],
+                  correctAnswer: 1,
+                  explanation: '3 red sections out of 8 total = 3/8',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction'],
+                    correctToken: 'probability-as-fraction',
+                    incorrectTokens: [
+                      'favourable-outcomes-error',        // Only counted 1 red
+                      null,                                // Correct
+                      'favourable-outcomes-error',        // Added other colours
+                      'total-outcomes-error',             // Wrong denominator
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-008',
+                  question: 'What is the probability of rolling an even number on a die?',
+                  options: ['1/6', '2/6', '3/6', '4/6'],
+                  correctAnswer: 2,
+                  explanation: 'Even numbers on die: 2, 4, 6 (3 outcomes out of 6). P = 3/6 = 1/2',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction', 'listing-outcomes'],
+                    correctToken: 'probability-as-fraction',
+                    incorrectTokens: [
+                      'favourable-outcomes-error',        // Only counted 1
+                      'favourable-outcomes-error',        // Only counted 2
+                      null,                                // Correct
+                      'favourable-outcomes-error',        // Counted too many
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-009',
+                  question: 'A bag has 4 red and 6 blue marbles. What is P(red) in simplest form?',
+                  options: ['4/10', '2/5', '4/6', '1/4'],
+                  correctAnswer: 1,
+                  explanation: '4 red out of 10 total = 4/10 = 2/5 (simplified by dividing by 2)',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['probability-as-fraction', 'simplifying-probability'],
+                    correctToken: 'simplifying-probability',
+                    incorrectTokens: [
+                      'simplifying-fractions-error',      // Didn't simplify
+                      null,                                // Correct
+                      'total-outcomes-error',             // Wrong denominator
+                      'simplifying-fractions-error',      // Wrong simplification
+                    ],
+                  },
+                },
+                // Questions 10-13: Complementary Probability
+                {
+                  id: 'VCMSP203-010',
                   question: 'If P(rain) = 3/5, what is P(no rain)?',
                   options: ['1/5', '2/5', '3/5', '4/5'],
                   correctAnswer: 1,
                   explanation: 'P(rain) + P(no rain) = 1. So P(no rain) = 1 - 3/5 = 2/5',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['complementary-probability'],
+                    correctToken: 'complementary-probability',
+                    incorrectTokens: [
+                      'complementary-calculation-error',  // Wrong subtraction
+                      null,                                // Correct
+                      'complement-concept-error',         // Same as original
+                      'complementary-calculation-error',  // Wrong calculation
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMSP203-005',
+                  id: 'VCMSP203-011',
+                  question: 'A spinner has P(blue) = 1/4. What is P(not blue)?',
+                  options: ['1/4', '2/4', '3/4', '4/4'],
+                  correctAnswer: 2,
+                  explanation: 'P(not blue) = 1 - P(blue) = 1 - 1/4 = 3/4',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['complementary-probability'],
+                    correctToken: 'complementary-probability',
+                    incorrectTokens: [
+                      'complement-concept-error',         // Same as original
+                      'complementary-calculation-error',  // Wrong calculation
+                      null,                                // Correct
+                      'complementary-calculation-error',  // 1 = certain
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-012',
+                  question: 'On a die, what is P(NOT rolling a 6)?',
+                  options: ['1/6', '4/6', '5/6', '6/6'],
+                  correctAnswer: 2,
+                  explanation: 'P(6) = 1/6, so P(not 6) = 1 - 1/6 = 5/6. Or: 5 numbers are not 6.',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['complementary-probability', 'listing-outcomes'],
+                    correctToken: 'complementary-probability',
+                    incorrectTokens: [
+                      'complement-concept-error',         // Gave P(6)
+                      'complementary-calculation-error',  // Wrong calculation
+                      null,                                // Correct
+                      'complementary-calculation-error',  // Wrong: certain
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-013',
+                  question: 'If P(winning a prize) = 0.2, what is P(not winning)?',
+                  options: ['0.2', '0.4', '0.8', '1.2'],
+                  correctAnswer: 2,
+                  explanation: 'P(not winning) = 1 - 0.2 = 0.8',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['complementary-probability'],
+                    correctToken: 'complementary-probability',
+                    incorrectTokens: [
+                      'complement-concept-error',         // Same as original
+                      'complementary-calculation-error',  // Wrong subtraction
+                      null,                                // Correct
+                      'probability-range-error',          // Greater than 1
+                    ],
+                  },
+                },
+                // Questions 14-17: Listing Outcomes
+                {
+                  id: 'VCMSP203-014',
+                  question: 'How many outcomes are there when flipping a coin?',
+                  options: ['1', '2', '3', '4'],
+                  correctAnswer: 1,
+                  explanation: 'A coin can land on heads or tails: 2 possible outcomes.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['listing-outcomes'],
+                    correctToken: 'listing-outcomes',
+                    incorrectTokens: [
+                      'listing-outcomes-error',           // Missing one
+                      null,                                // Correct
+                      'listing-outcomes-error',           // Counted edge
+                      'listing-outcomes-error',           // Wrong count
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-015',
+                  question: 'When flipping two coins, what are all possible outcomes?',
+                  options: ['HH, TT', 'HH, HT, TT', 'HH, HT, TH, TT', 'H, T, HH, TT'],
+                  correctAnswer: 2,
+                  explanation: 'Each coin can be H or T: HH, HT, TH, TT (4 outcomes)',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['listing-outcomes', 'compound-events'],
+                    correctToken: 'listing-outcomes',
+                    incorrectTokens: [
+                      'listing-outcomes-error',           // Missed mixed outcomes
+                      'listing-outcomes-error',           // Missed TH
+                      null,                                // Correct
+                      'listing-outcomes-error',           // Mixed single and double
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-016',
+                  question: 'How many outcomes when rolling a standard die?',
+                  options: ['4', '5', '6', '8'],
+                  correctAnswer: 2,
+                  explanation: 'A standard die has 6 faces: 1, 2, 3, 4, 5, 6',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['listing-outcomes'],
+                    correctToken: 'listing-outcomes',
+                    incorrectTokens: [
+                      'listing-outcomes-error',           // Wrong count
+                      'listing-outcomes-error',           // Wrong count
+                      null,                                // Correct
+                      'listing-outcomes-error',           // Wrong count
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-017',
+                  question: 'A bag has only red and blue balls. If there are 8 outcomes when picking one ball, what could be in the bag?',
+                  options: ['4 red, 4 blue', '3 red, 5 blue', '8 red, 8 blue', 'Any combination totalling 8'],
+                  correctAnswer: 3,
+                  explanation: 'Total outcomes = total balls. Any combination of red and blue totalling 8 works.',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['listing-outcomes', 'probability-concept'],
+                    correctToken: 'listing-outcomes',
+                    incorrectTokens: [
+                      'outcomes-vs-balls-confusion',      // One valid answer but not only
+                      'outcomes-vs-balls-confusion',      // One valid answer but not only
+                      'total-outcomes-error',             // Doubled
+                      null,                                // Correct
+                    ],
+                  },
+                },
+                // Questions 18-20: Compound Events
+                {
+                  id: 'VCMSP203-018',
                   question: 'Two coins are flipped. What is P(getting two heads)?',
                   options: ['1/2', '1/3', '1/4', '1/8'],
                   correctAnswer: 2,
-                  explanation: 'Outcomes: HH, HT, TH, TT (4 total). P(HH) = 1/4',
-                  difficulty: 3
-                }
+                  explanation: 'Outcomes: HH, HT, TH, TT (4 total). Only 1 is HH. P(HH) = 1/4',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['compound-events', 'probability-as-fraction'],
+                    correctToken: 'compound-events',
+                    incorrectTokens: [
+                      'compound-event-error',             // Only considered 1 coin
+                      'compound-event-error',             // Wrong total
+                      null,                                // Correct
+                      'compound-event-error',             // 3 coins
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-019',
+                  question: 'Two coins are flipped. What is P(getting at least one head)?',
+                  options: ['1/4', '1/2', '3/4', '1'],
+                  correctAnswer: 2,
+                  explanation: 'Outcomes with at least one H: HH, HT, TH (3 out of 4). P = 3/4',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['compound-events', 'listing-outcomes'],
+                    correctToken: 'compound-events',
+                    incorrectTokens: [
+                      'compound-event-error',             // Only counted HH
+                      'compound-event-error',             // Miscounted
+                      null,                                // Correct
+                      'compound-event-error',             // Counted all
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP203-020',
+                  question: 'A die is rolled and a coin is flipped. How many total outcomes are possible?',
+                  options: ['6', '8', '12', '36'],
+                  correctAnswer: 2,
+                  explanation: 'Die has 6 outcomes, coin has 2. Total = 6 × 2 = 12 outcomes.',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['compound-events', 'listing-outcomes'],
+                    correctToken: 'compound-events',
+                    incorrectTokens: [
+                      'compound-event-error',             // Only die
+                      'compound-event-error',             // Added instead of multiplied
+                      null,                                // Correct
+                      'compound-event-error',             // Multiplied wrong
+                    ],
+                  },
+                },
               ]
             }
           ]
@@ -5396,47 +5771,422 @@ Best for: Showing two categories at once
                   explanation: 'Scores are numerical data, and a dot plot shows frequency of each score'
                 }
               ],
+              knowledgeTokens: [
+                {
+                  id: 'column-graph-reading',
+                  name: 'Column Graph Reading',
+                  description: 'Reading and interpreting column/bar graphs',
+                  prerequisites: [],
+                },
+                {
+                  id: 'column-graph-construction',
+                  name: 'Column Graph Construction',
+                  description: 'Understanding how to construct accurate column graphs',
+                  prerequisites: ['column-graph-reading'],
+                },
+                {
+                  id: 'dot-plot-reading',
+                  name: 'Dot Plot Reading',
+                  description: 'Reading and interpreting dot plots',
+                  prerequisites: [],
+                },
+                {
+                  id: 'two-way-table-reading',
+                  name: 'Two-Way Table Reading',
+                  description: 'Reading and interpreting two-way tables',
+                  prerequisites: [],
+                },
+                {
+                  id: 'graph-type-selection',
+                  name: 'Graph Type Selection',
+                  description: 'Choosing appropriate graph types for different data',
+                  prerequisites: ['column-graph-reading', 'dot-plot-reading'],
+                },
+                {
+                  id: 'data-from-graphs',
+                  name: 'Extracting Data from Graphs',
+                  description: 'Finding totals, differences, and comparisons from graphs',
+                  prerequisites: ['column-graph-reading', 'dot-plot-reading'],
+                },
+                {
+                  id: 'categorical-vs-numerical',
+                  name: 'Categorical vs Numerical Data',
+                  description: 'Distinguishing between categorical and numerical data types',
+                  prerequisites: [],
+                },
+                {
+                  id: 'graph-features',
+                  name: 'Graph Features',
+                  description: 'Understanding titles, labels, scales, and axes',
+                  prerequisites: [],
+                },
+              ],
               questions: [
+                // Questions 1-5: Column Graph Reading
                 {
                   id: 'VCMSP206-001',
                   question: 'What type of graph is best for comparing the number of students in different clubs?',
                   options: ['Dot plot', 'Column graph', 'Line graph', 'Pie chart'],
                   correctAnswer: 1,
                   explanation: 'A column graph is best for comparing categories (clubs)',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['graph-type-selection', 'column-graph-reading'],
+                    correctToken: 'graph-type-selection',
+                    incorrectTokens: [
+                      'graph-type-confusion',             // Dot plots for numerical spread
+                      null,                                // Correct
+                      'graph-type-confusion',             // Line graphs for change over time
+                      'graph-type-confusion',             // Pie charts for proportions
+                    ],
+                  },
                 },
                 {
                   id: 'VCMSP206-002',
-                  question: 'In a dot plot showing ages of students, what does 4 dots above the number 11 mean?',
-                  options: ['11 students are aged 4', '4 students are aged 11', '44 students total', 'Average age is 11'],
-                  correctAnswer: 1,
-                  explanation: 'Each dot represents one student with that age, so 4 dots = 4 students aged 11',
-                  difficulty: 1
-                },
-                {
-                  id: 'VCMSP206-003',
                   question: 'A column graph shows: Red=12, Blue=8, Green=5. What is the total?',
                   options: ['12', '20', '25', '96'],
                   correctAnswer: 2,
                   explanation: 'Add all the values: 12 + 8 + 5 = 25',
-                  difficulty: 2
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['column-graph-reading', 'data-from-graphs'],
+                    correctToken: 'data-from-graphs',
+                    incorrectTokens: [
+                      'data-extraction-error',            // Only took largest
+                      'data-extraction-error',            // Only added two
+                      null,                                // Correct
+                      'data-extraction-error',            // Multiplied instead
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-003',
+                  question: 'In a column graph, which sport is most popular if Cricket=15, Soccer=22, Tennis=8?',
+                  options: ['Cricket', 'Soccer', 'Tennis', 'Cannot tell'],
+                  correctAnswer: 1,
+                  explanation: 'Soccer has the highest value (22), so it is most popular.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['column-graph-reading', 'data-from-graphs'],
+                    correctToken: 'data-from-graphs',
+                    incorrectTokens: [
+                      'data-comparison-error',            // Second highest
+                      null,                                // Correct
+                      'data-comparison-error',            // Lowest
+                      'data-extraction-error',            // Didn't read correctly
+                    ],
+                  },
                 },
                 {
                   id: 'VCMSP206-004',
+                  question: 'A column graph shows Year 3=18, Year 4=24, Year 5=20. How many more students are in Year 4 than Year 3?',
+                  options: ['4', '6', '18', '42'],
+                  correctAnswer: 1,
+                  explanation: 'Difference = 24 - 18 = 6 more students in Year 4',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['column-graph-reading', 'data-from-graphs'],
+                    correctToken: 'data-from-graphs',
+                    incorrectTokens: [
+                      'data-comparison-error',            // Wrong subtraction
+                      null,                                // Correct
+                      'data-extraction-error',            // Just took Year 3 value
+                      'data-comparison-error',            // Added instead
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-005',
                   question: 'Which statement about column graphs is TRUE?',
                   options: ['Columns should touch', 'All columns should be different widths', 'The scale must start at 0', 'Labels are optional'],
                   correctAnswer: 2,
                   explanation: 'Column graphs should have a scale starting at 0 to avoid misleading readers',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['column-graph-construction', 'graph-features'],
+                    correctToken: 'graph-features',
+                    incorrectTokens: [
+                      'graph-construction-error',         // Gaps are needed
+                      'graph-construction-error',         // Same width required
+                      null,                                // Correct
+                      'graph-construction-error',         // Labels are essential
+                    ],
+                  },
+                },
+                // Questions 6-10: Dot Plot Reading
+                {
+                  id: 'VCMSP206-006',
+                  question: 'In a dot plot showing ages of students, what does 4 dots above the number 11 mean?',
+                  options: ['11 students are aged 4', '4 students are aged 11', '44 students total', 'Average age is 11'],
+                  correctAnswer: 1,
+                  explanation: 'Each dot represents one student with that age, so 4 dots = 4 students aged 11',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['dot-plot-reading'],
+                    correctToken: 'dot-plot-reading',
+                    incorrectTokens: [
+                      'dot-plot-interpretation-error',    // Reversed meaning
+                      null,                                // Correct
+                      'dot-plot-interpretation-error',    // Multiplied
+                      'dot-plot-interpretation-error',    // Wrong concept
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMSP206-005',
+                  id: 'VCMSP206-007',
+                  question: 'A dot plot shows test scores: 5(••), 6(•••), 7(••••), 8(••), 9(•). How many students are there?',
+                  options: ['5', '9', '12', '35'],
+                  correctAnswer: 2,
+                  explanation: 'Count all dots: 2 + 3 + 4 + 2 + 1 = 12 students',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['dot-plot-reading', 'data-from-graphs'],
+                    correctToken: 'dot-plot-reading',
+                    incorrectTokens: [
+                      'data-extraction-error',            // Counted scores not dots
+                      'data-extraction-error',            // Only highest score
+                      null,                                // Correct
+                      'data-extraction-error',            // Wrong calculation
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-008',
+                  question: 'In a dot plot, what score is most common if 7 has the most dots?',
+                  options: ['The smallest score', 'The largest score', '7', 'Cannot tell'],
+                  correctAnswer: 2,
+                  explanation: 'The value with the most dots is the most common (mode). That is 7.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['dot-plot-reading', 'data-from-graphs'],
+                    correctToken: 'dot-plot-reading',
+                    incorrectTokens: [
+                      'mode-confusion',                   // Wrong concept
+                      'mode-confusion',                   // Wrong concept
+                      null,                                // Correct
+                      'dot-plot-interpretation-error',    // Didn't understand
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-009',
+                  question: 'What type of data is best shown on a dot plot?',
+                  options: ['Categories like favourite colours', 'Numerical data like test scores', 'Names of students', 'Dates'],
+                  correctAnswer: 1,
+                  explanation: 'Dot plots are best for numerical data where you want to see the spread of values.',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['graph-type-selection', 'categorical-vs-numerical'],
+                    correctToken: 'graph-type-selection',
+                    incorrectTokens: [
+                      'categorical-numerical-confusion',  // Column graph better
+                      null,                                // Correct
+                      'categorical-numerical-confusion',  // Not a data type
+                      'graph-type-confusion',             // Line graph better
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-010',
+                  question: 'A dot plot shows: 10(•), 11(•••), 12(••), 13(••••). What is the range?',
+                  options: ['3', '4', '10', '13'],
+                  correctAnswer: 0,
+                  explanation: 'Range = highest - lowest = 13 - 10 = 3',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['dot-plot-reading', 'data-from-graphs'],
+                    correctToken: 'data-from-graphs',
+                    incorrectTokens: [
+                      null,                                // Correct
+                      'range-calculation-error',          // Counted values
+                      'range-calculation-error',          // Just took lowest
+                      'range-calculation-error',          // Just took highest
+                    ],
+                  },
+                },
+                // Questions 11-14: Two-Way Tables
+                {
+                  id: 'VCMSP206-011',
                   question: 'A two-way table shows boys and girls who like cats or dogs. There are 15 boys who like dogs and 12 girls who like dogs. How many students like dogs?',
                   options: ['12', '15', '27', 'Cannot tell'],
                   correctAnswer: 2,
                   explanation: 'Add boys and girls who like dogs: 15 + 12 = 27',
-                  difficulty: 2
-                }
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['two-way-table-reading', 'data-from-graphs'],
+                    correctToken: 'two-way-table-reading',
+                    incorrectTokens: [
+                      'table-reading-error',              // Only girls
+                      'table-reading-error',              // Only boys
+                      null,                                // Correct
+                      'table-reading-error',              // Didn't understand
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-012',
+                  question: 'In a two-way table: Year 4 Cricket=8, Soccer=12; Year 5 Cricket=10, Soccer=15. How many play Cricket?',
+                  options: ['8', '10', '18', '45'],
+                  correctAnswer: 2,
+                  explanation: 'Add Cricket from both years: 8 + 10 = 18',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['two-way-table-reading', 'data-from-graphs'],
+                    correctToken: 'two-way-table-reading',
+                    incorrectTokens: [
+                      'table-reading-error',              // Only Year 4
+                      'table-reading-error',              // Only Year 5
+                      null,                                // Correct
+                      'table-reading-error',              // Added everything
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-013',
+                  question: 'What is a two-way table best for showing?',
+                  options: ['Change over time', 'Two categories at once', 'Just one set of numbers', 'Pictures'],
+                  correctAnswer: 1,
+                  explanation: 'Two-way tables show two categories (like year level and sport choice) together.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['two-way-table-reading', 'graph-type-selection'],
+                    correctToken: 'graph-type-selection',
+                    incorrectTokens: [
+                      'graph-type-confusion',             // Line graph
+                      null,                                // Correct
+                      'graph-type-confusion',             // Simple table
+                      'graph-type-confusion',             // Wrong
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-014',
+                  question: 'In a table: Morning bus=25, car=15; Afternoon bus=20, car=18. Total travelling by bus?',
+                  options: ['20', '25', '45', '78'],
+                  correctAnswer: 2,
+                  explanation: 'Add bus from morning and afternoon: 25 + 20 = 45',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['two-way-table-reading', 'data-from-graphs'],
+                    correctToken: 'two-way-table-reading',
+                    incorrectTokens: [
+                      'table-reading-error',              // Only afternoon
+                      'table-reading-error',              // Only morning
+                      null,                                // Correct
+                      'table-reading-error',              // Added all
+                    ],
+                  },
+                },
+                // Questions 15-17: Graph Features
+                {
+                  id: 'VCMSP206-015',
+                  question: 'What must every graph have?',
+                  options: ['Colours', 'A title', 'Pictures', 'Grid lines'],
+                  correctAnswer: 1,
+                  explanation: 'Every graph needs a title to tell readers what data is being shown.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['graph-features'],
+                    correctToken: 'graph-features',
+                    incorrectTokens: [
+                      'graph-features-error',             // Optional
+                      null,                                // Correct
+                      'graph-features-error',             // Not necessary
+                      'graph-features-error',             // Helpful but optional
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-016',
+                  question: 'On a column graph, what do the labels on the horizontal axis usually show?',
+                  options: ['Numbers only', 'Categories being compared', 'The title', 'Nothing'],
+                  correctAnswer: 1,
+                  explanation: 'The horizontal axis shows the categories (e.g., sports, colours, months)',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['graph-features', 'column-graph-reading'],
+                    correctToken: 'graph-features',
+                    incorrectTokens: [
+                      'axis-confusion',                   // That's vertical axis
+                      null,                                // Correct
+                      'axis-confusion',                   // Title goes at top
+                      'axis-confusion',                   // Wrong
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-017',
+                  question: 'If a column graph scale goes 0, 5, 10, 15..., what number should the next line be?',
+                  options: ['16', '18', '20', '25'],
+                  correctAnswer: 2,
+                  explanation: 'The scale increases by 5 each time: 15 + 5 = 20',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['graph-features', 'column-graph-reading'],
+                    correctToken: 'graph-features',
+                    incorrectTokens: [
+                      'scale-pattern-error',              // Added 1
+                      'scale-pattern-error',              // Added 3
+                      null,                                // Correct
+                      'scale-pattern-error',              // Added 10
+                    ],
+                  },
+                },
+                // Questions 18-20: Data Types and Selection
+                {
+                  id: 'VCMSP206-018',
+                  question: 'Which is an example of categorical data?',
+                  options: ['Heights of students', 'Test scores', 'Favourite colours', 'Number of siblings'],
+                  correctAnswer: 2,
+                  explanation: 'Favourite colours are categories (red, blue, green). The others are numbers.',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['categorical-vs-numerical'],
+                    correctToken: 'categorical-vs-numerical',
+                    incorrectTokens: [
+                      'categorical-numerical-confusion',  // Numerical
+                      'categorical-numerical-confusion',  // Numerical
+                      null,                                // Correct
+                      'categorical-numerical-confusion',  // Numerical
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-019',
+                  question: 'You want to show how many students got each mark (5, 6, 7, 8, 9, 10) on a quiz. Which display is best?',
+                  options: ['Column graph', 'Dot plot', 'Pie chart', 'Two-way table'],
+                  correctAnswer: 1,
+                  explanation: 'A dot plot is perfect for showing the frequency of each numerical score.',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['graph-type-selection', 'categorical-vs-numerical'],
+                    correctToken: 'graph-type-selection',
+                    incorrectTokens: [
+                      'graph-type-confusion',             // Better for categories
+                      null,                                // Correct
+                      'graph-type-confusion',             // For proportions
+                      'graph-type-confusion',             // For two variables
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMSP206-020',
+                  question: 'You want to show favourite pets in Year 4 and Year 5. Which display is best?',
+                  options: ['Dot plot', 'Single column graph', 'Two-way table', 'Line graph'],
+                  correctAnswer: 2,
+                  explanation: 'A two-way table can show two categories: year level and pet choice.',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['graph-type-selection', 'two-way-table-reading'],
+                    correctToken: 'graph-type-selection',
+                    incorrectTokens: [
+                      'graph-type-confusion',             // For numerical spread
+                      'graph-type-confusion',             // Only one category
+                      null,                                // Correct
+                      'graph-type-confusion',             // For change over time
+                    ],
+                  },
+                },
               ]
             }
           ]
