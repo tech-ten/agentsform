@@ -71,8 +71,16 @@ function PricingContent() {
   const [highlightedPlan, setHighlightedPlan] = useState<string | null>(null)
 
   useEffect(() => {
+    // Check for pre-selected plan first (before auth check)
+    const selectedPlan = searchParams.get('plan')
+    if (selectedPlan && ['explorer', 'scholar', 'achiever'].includes(selectedPlan)) {
+      setHighlightedPlan(selectedPlan)
+    }
+
     if (!isAuthenticatedSync()) {
-      router.push('/login?redirect=/pricing')
+      // Preserve the plan parameter in the redirect
+      const planParam = selectedPlan ? `?plan=${selectedPlan}` : ''
+      router.push(`/login?redirect=/pricing${encodeURIComponent(planParam)}`)
       return
     }
     loadStatus()
@@ -85,11 +93,8 @@ function PricingContent() {
       setMessage('Payment was cancelled.')
     }
 
-    // Check for pre-selected plan (e.g., /pricing?plan=scholar)
-    const selectedPlan = searchParams.get('plan')
-    if (selectedPlan && ['explorer', 'scholar', 'achiever'].includes(selectedPlan)) {
-      setHighlightedPlan(selectedPlan)
-      // Scroll to pricing section after a short delay
+    // Scroll to highlighted plan after a short delay
+    if (selectedPlan) {
       setTimeout(() => {
         document.getElementById(`plan-${selectedPlan}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }, 500)
@@ -242,11 +247,16 @@ function PricingContent() {
             {/* Pricing Grid */}
             <div className="grid md:grid-cols-3 gap-6">
               {plans.map((plan) => {
-                const isCurrentPlan = plan.id === currentTier || (plan.id === 'explorer' && currentTier === 'free')
-                const isDowngrade =
+                // Only show as "current plan" if user has an ACTIVE subscription for this tier
+                // Free tier means NO subscription - user must choose and pay
+                const hasActiveSubscription = status?.subscriptionId !== null
+                const isCurrentPlan = hasActiveSubscription && plan.id === currentTier
+                const isDowngrade = hasActiveSubscription && (
                   (currentTier === 'achiever' && plan.id !== 'achiever') ||
-                  (currentTier === 'scholar' && (plan.id === 'explorer' || plan.id === 'free'))
-                const isHighlighted = highlightedPlan === plan.id
+                  (currentTier === 'scholar' && (plan.id === 'explorer'))
+                )
+                // Don't highlight Explorer - we want to funnel users to Scholar or higher
+                const isHighlighted = highlightedPlan === plan.id && plan.id !== 'explorer'
 
                 return (
                   <div
@@ -316,24 +326,24 @@ function PricingContent() {
                       >
                         Manage Plan
                       </Button>
-                    ) : plan.id === 'explorer' ? (
+                    ) : (
                       <Button
-                        variant="outline"
-                        className="w-full rounded-full bg-gradient-to-r from-green-50 to-emerald-50 border-green-300 hover:from-green-100 hover:to-emerald-100 text-green-700 font-medium"
+                        className="w-full rounded-full"
+                        variant={plan.popular || isHighlighted ? 'default' : 'outline'}
                         onClick={() => handleUpgrade(plan.id)}
                         disabled={upgrading !== null}
                       >
                         {upgrading === plan.id ? 'Processing...' : 'Start Free Trial'}
                       </Button>
-                    ) : (
-                      <Button
-                        className="w-full rounded-full"
-                        variant={plan.popular ? 'default' : 'outline'}
-                        onClick={() => handleUpgrade(plan.id)}
-                        disabled={upgrading !== null}
-                      >
-                        {upgrading === plan.id ? 'Processing...' : 'Upgrade Now'}
-                      </Button>
+                    )}
+
+                    {/* Explorer 60-day limit fine print */}
+                    {plan.id === 'explorer' && !isCurrentPlan && (
+                      <p className="text-xs text-neutral-400 text-center mt-3">
+                        Limited to 60 days after free trial ends.
+                        <br />
+                        Upgrade to Scholar required to continue.
+                      </p>
                     )}
                   </div>
                 )

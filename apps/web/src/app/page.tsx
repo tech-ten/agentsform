@@ -20,7 +20,7 @@ export default function Home() {
             <Link href="/login" className="text-sm text-neutral-600 hover:text-black transition-colors">
               Sign in
             </Link>
-            <Link href="/register">
+            <Link href="/pricing?plan=scholar">
               <Button size="sm" className="rounded-full px-4">
                 Get Started
               </Button>
@@ -40,7 +40,7 @@ export default function Home() {
             Instant feedback, adaptive difficulty, and explanations that make sense.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
+            <Link href="/pricing?plan=scholar">
               <Button size="lg" className="rounded-full px-8 h-12 text-base">
                 Start free trial
               </Button>
@@ -155,22 +155,15 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {/* Free */}
-            <div className="border border-neutral-200 rounded-2xl p-8 relative">
-              <div className="absolute -top-3 left-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium animate-pulse">
-                Limited time only
-              </div>
+            {/* Explorer */}
+            <div className="border border-neutral-200 rounded-2xl p-8">
               <h3 className="text-lg font-semibold mb-1">Explorer</h3>
-              <p className="text-sm text-neutral-500 mb-6">
-                Free for a limited time
-                <span className="block text-amber-600 font-medium mt-1">
-                  Lock in your free access now!
-                </span>
-              </p>
+              <p className="text-sm text-neutral-500 mb-6">Perfect for getting started</p>
               <div className="mb-6">
-                <span className="text-4xl font-semibold text-green-600">FREE</span>
-                <span className="text-neutral-500 block text-sm mt-1">
-                  for 21 days, then $0.99/month
+                <span className="text-4xl font-semibold">$0.99</span>
+                <span className="text-neutral-500">/month</span>
+                <span className="text-green-600 block text-sm mt-1 font-medium">
+                  21-day free trial
                 </span>
               </div>
               <ul className="space-y-3 mb-8 text-sm">
@@ -191,11 +184,16 @@ export default function Home() {
                   Basic progress tracking
                 </li>
               </ul>
-              <Link href="/register" className="block">
-                <Button variant="outline" className="w-full rounded-full bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 hover:from-amber-100 hover:to-orange-100">
-                  Get Started Free
+              <Link href="/pricing?plan=explorer" className="block">
+                <Button variant="outline" className="w-full rounded-full">
+                  Start Free Trial
                 </Button>
               </Link>
+              <p className="text-xs text-neutral-400 text-center mt-3">
+                Limited to 60 days after free trial ends.
+                <br />
+                Upgrade to Scholar required to continue.
+              </p>
             </div>
 
             {/* Scholar */}
@@ -234,7 +232,7 @@ export default function Home() {
                   Concept mastery tracking
                 </li>
               </ul>
-              <Link href="/register?plan=scholar" className="block">
+              <Link href="/pricing?plan=scholar" className="block">
                 <Button className="w-full rounded-full">
                   Start free trial
                 </Button>
@@ -274,7 +272,7 @@ export default function Home() {
                   Priority support
                 </li>
               </ul>
-              <Link href="/register?plan=achiever" className="block">
+              <Link href="/pricing?plan=achiever" className="block">
                 <Button variant="outline" className="w-full rounded-full">
                   Start free trial
                 </Button>
@@ -293,7 +291,7 @@ export default function Home() {
           <p className="text-lg text-neutral-400 mb-8">
             Join thousands of Australian families already using StudyMate.
           </p>
-          <Link href="/register">
+          <Link href="/pricing?plan=scholar">
             <Button size="lg" variant="secondary" className="rounded-full px-8 h-12 text-base">
               Get started free
             </Button>
@@ -326,7 +324,7 @@ export default function Home() {
                 <li><Link href="#features" className="hover:text-black transition-colors">Features</Link></li>
                 <li><Link href="#pricing" className="hover:text-black transition-colors">Pricing</Link></li>
                 <li><Link href="/login" className="hover:text-black transition-colors">Sign In</Link></li>
-                <li><Link href="/register" className="hover:text-black transition-colors">Get Started</Link></li>
+                <li><Link href="/pricing?plan=scholar" className="hover:text-black transition-colors">Get Started</Link></li>
               </ul>
             </div>
 
