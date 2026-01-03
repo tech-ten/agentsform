@@ -3719,47 +3719,423 @@ Ask yourself: Will my answer be a sensible number?
                   explanation: 'An apple weighs about 150-200 grams - easier than 0.15-0.2 kg'
                 }
               ],
+              knowledgeTokens: [
+                {
+                  id: 'length-unit-selection',
+                  name: 'Length Unit Selection',
+                  description: 'Choosing appropriate units for measuring length (mm, cm, m, km)',
+                  prerequisites: [],
+                },
+                {
+                  id: 'mass-unit-selection',
+                  name: 'Mass Unit Selection',
+                  description: 'Choosing appropriate units for measuring mass (mg, g, kg, t)',
+                  prerequisites: [],
+                },
+                {
+                  id: 'capacity-unit-selection',
+                  name: 'Capacity Unit Selection',
+                  description: 'Choosing appropriate units for measuring capacity (mL, L)',
+                  prerequisites: [],
+                },
+                {
+                  id: 'length-conversion',
+                  name: 'Length Conversion',
+                  description: 'Converting between length units (mm, cm, m, km)',
+                  prerequisites: ['length-unit-selection'],
+                },
+                {
+                  id: 'mass-conversion',
+                  name: 'Mass Conversion',
+                  description: 'Converting between mass units (g, kg, t)',
+                  prerequisites: ['mass-unit-selection'],
+                },
+                {
+                  id: 'capacity-conversion',
+                  name: 'Capacity Conversion',
+                  description: 'Converting between capacity units (mL, L)',
+                  prerequisites: ['capacity-unit-selection'],
+                },
+                {
+                  id: 'area-unit-understanding',
+                  name: 'Area Unit Understanding',
+                  description: 'Understanding squared units for area (cm², m², km²)',
+                  prerequisites: ['length-unit-selection'],
+                },
+                {
+                  id: 'volume-capacity-connection',
+                  name: 'Volume-Capacity Connection',
+                  description: 'Understanding that 1 mL = 1 cm³ and 1 L = 1000 cm³',
+                  prerequisites: ['capacity-unit-selection'],
+                },
+              ],
               questions: [
+                // Questions 1-5: Length Unit Selection
                 {
                   id: 'VCMMG195-001',
                   question: 'What unit would be best to measure the distance from Melbourne to Sydney?',
                   options: ['Millimetres', 'Centimetres', 'Metres', 'Kilometres'],
                   correctAnswer: 3,
                   explanation: 'Long distances between cities are measured in kilometres (about 877 km)',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['length-unit-selection'],
+                    correctToken: 'length-unit-selection',
+                    incorrectTokens: [
+                      'length-unit-scale-error',          // Way too small
+                      'length-unit-scale-error',          // Too small
+                      'length-unit-scale-error',          // Still too small for cities
+                      null,                                // Correct
+                    ],
+                  },
                 },
                 {
                   id: 'VCMMG195-002',
+                  question: 'What unit would you use to measure the length of a pencil?',
+                  options: ['Kilometres', 'Metres', 'Centimetres', 'Millimetres'],
+                  correctAnswer: 2,
+                  explanation: 'A pencil is typically 15-20 cm long, making centimetres the most practical unit.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['length-unit-selection'],
+                    correctToken: 'length-unit-selection',
+                    incorrectTokens: [
+                      'length-unit-scale-error',          // Way too big
+                      'length-unit-scale-error',          // Too big
+                      null,                                // Correct
+                      'length-unit-scale-error',          // Too small (150mm is awkward)
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-003',
+                  question: 'What unit would be best to measure the height of a door?',
+                  options: ['Millimetres', 'Centimetres', 'Metres', 'Kilometres'],
+                  correctAnswer: 2,
+                  explanation: 'A door is about 2 metres tall. Metres give a simple, sensible number.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['length-unit-selection'],
+                    correctToken: 'length-unit-selection',
+                    incorrectTokens: [
+                      'length-unit-scale-error',          // Too small (2000mm)
+                      'length-unit-scale-error',          // Usable but less practical (200cm)
+                      null,                                // Correct
+                      'length-unit-scale-error',          // Way too big
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-004',
+                  question: 'What unit would you use to measure the thickness of a coin?',
+                  options: ['Kilometres', 'Metres', 'Centimetres', 'Millimetres'],
+                  correctAnswer: 3,
+                  explanation: 'A coin is only about 2mm thick. Millimetres are needed for very small measurements.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['length-unit-selection'],
+                    correctToken: 'length-unit-selection',
+                    incorrectTokens: [
+                      'length-unit-scale-error',          // Way too big
+                      'length-unit-scale-error',          // Too big
+                      'length-unit-scale-error',          // Too big (0.2cm is awkward)
+                      null,                                // Correct
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-005',
+                  question: 'What unit would be best to measure the length of a sports field?',
+                  options: ['Millimetres', 'Centimetres', 'Metres', 'Kilometres'],
+                  correctAnswer: 2,
+                  explanation: 'A sports field is typically 100-150 metres long. Metres give practical numbers.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['length-unit-selection'],
+                    correctToken: 'length-unit-selection',
+                    incorrectTokens: [
+                      'length-unit-scale-error',          // Way too small
+                      'length-unit-scale-error',          // Too small
+                      null,                                // Correct
+                      'length-unit-scale-error',          // Too big (0.1km is awkward)
+                    ],
+                  },
+                },
+                // Questions 6-8: Mass Unit Selection
+                {
+                  id: 'VCMMG195-006',
+                  question: 'What unit would you use to measure the mass of an elephant?',
+                  options: ['Milligrams', 'Grams', 'Kilograms', 'Tonnes'],
+                  correctAnswer: 3,
+                  explanation: 'An elephant weighs about 5-6 tonnes. Tonnes are used for very heavy things.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['mass-unit-selection'],
+                    correctToken: 'mass-unit-selection',
+                    incorrectTokens: [
+                      'mass-unit-scale-error',            // Way too small
+                      'mass-unit-scale-error',            // Too small
+                      'mass-unit-scale-error',            // Possible but awkward (5000kg)
+                      null,                                // Correct
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-007',
+                  question: 'What unit would be best to measure the mass of an apple?',
+                  options: ['Milligrams', 'Grams', 'Kilograms', 'Tonnes'],
+                  correctAnswer: 1,
+                  explanation: 'An apple weighs about 150-200 grams. Grams give sensible, easy-to-use numbers.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['mass-unit-selection'],
+                    correctToken: 'mass-unit-selection',
+                    incorrectTokens: [
+                      'mass-unit-scale-error',            // Too small (150,000mg)
+                      null,                                // Correct
+                      'mass-unit-scale-error',            // Too big (0.15kg)
+                      'mass-unit-scale-error',            // Way too big
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-008',
+                  question: 'What unit would you use to measure a dose of medicine?',
+                  options: ['Milligrams', 'Grams', 'Kilograms', 'Tonnes'],
+                  correctAnswer: 0,
+                  explanation: 'Medicine doses are often very small, measured in milligrams (e.g., 500mg of paracetamol).',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['mass-unit-selection'],
+                    correctToken: 'mass-unit-selection',
+                    incorrectTokens: [
+                      null,                                // Correct
+                      'mass-unit-scale-error',            // Possible but less precise
+                      'mass-unit-scale-error',            // Way too big
+                      'mass-unit-scale-error',            // Way too big
+                    ],
+                  },
+                },
+                // Questions 9-10: Capacity Unit Selection
+                {
+                  id: 'VCMMG195-009',
                   question: 'What unit would you use to measure the capacity of a swimming pool?',
                   options: ['Millilitres', 'Litres', 'Grams', 'Metres'],
                   correctAnswer: 1,
                   explanation: 'Large amounts of liquid are measured in litres (a pool might hold 50,000 litres)',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['capacity-unit-selection'],
+                    correctToken: 'capacity-unit-selection',
+                    incorrectTokens: [
+                      'capacity-unit-scale-error',        // Too small
+                      null,                                // Correct
+                      'capacity-mass-confusion',          // Wrong measurement type
+                      'capacity-length-confusion',        // Wrong measurement type
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMMG195-003',
+                  id: 'VCMMG195-010',
+                  question: 'What unit would be best to measure a teaspoon of medicine?',
+                  options: ['Millilitres', 'Litres', 'Kilograms', 'Metres'],
+                  correctAnswer: 0,
+                  explanation: 'A teaspoon holds about 5 mL. Millilitres are used for small amounts of liquid.',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['capacity-unit-selection'],
+                    correctToken: 'capacity-unit-selection',
+                    incorrectTokens: [
+                      null,                                // Correct
+                      'capacity-unit-scale-error',        // Too big (0.005L)
+                      'capacity-mass-confusion',          // Wrong type
+                      'capacity-length-confusion',        // Wrong type
+                    ],
+                  },
+                },
+                // Questions 11-14: Length Conversions
+                {
+                  id: 'VCMMG195-011',
                   question: 'How many centimetres are in 3.5 metres?',
                   options: ['35', '350', '3,500', '0.35'],
                   correctAnswer: 1,
                   explanation: '1 m = 100 cm, so 3.5 m = 3.5 × 100 = 350 cm',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['length-conversion'],
+                    correctToken: 'length-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Multiplied by 10
+                      null,                                // Correct
+                      'conversion-factor-error',          // Multiplied by 1000
+                      'conversion-direction-error',       // Divided instead of multiplied
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMMG195-004',
+                  id: 'VCMMG195-012',
+                  question: 'How many metres are in 2.5 kilometres?',
+                  options: ['25', '250', '2,500', '25,000'],
+                  correctAnswer: 2,
+                  explanation: '1 km = 1,000 m, so 2.5 km = 2.5 × 1,000 = 2,500 m',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['length-conversion'],
+                    correctToken: 'length-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Multiplied by 10
+                      'conversion-factor-error',          // Multiplied by 100
+                      null,                                // Correct
+                      'conversion-factor-error',          // Multiplied by 10,000
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-013',
+                  question: 'Convert 4,200 mm to metres.',
+                  options: ['0.42 m', '4.2 m', '42 m', '420 m'],
+                  correctAnswer: 1,
+                  explanation: '1 m = 1,000 mm, so 4,200 mm ÷ 1,000 = 4.2 m',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['length-conversion'],
+                    correctToken: 'length-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Divided by 10,000
+                      null,                                // Correct
+                      'conversion-factor-error',          // Divided by 100
+                      'conversion-direction-error',       // Multiplied instead
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-014',
+                  question: 'How many millimetres are in 8.5 centimetres?',
+                  options: ['0.85 mm', '8.5 mm', '85 mm', '850 mm'],
+                  correctAnswer: 2,
+                  explanation: '1 cm = 10 mm, so 8.5 cm = 8.5 × 10 = 85 mm',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['length-conversion'],
+                    correctToken: 'length-conversion',
+                    incorrectTokens: [
+                      'conversion-direction-error',       // Divided by 10
+                      'conversion-factor-error',          // No conversion
+                      null,                                // Correct
+                      'conversion-factor-error',          // Multiplied by 100
+                    ],
+                  },
+                },
+                // Questions 15-17: Mass Conversions
+                {
+                  id: 'VCMMG195-015',
                   question: 'A recipe needs 2.5 kg of flour. How many grams is this?',
                   options: ['25 g', '250 g', '2,500 g', '25,000 g'],
                   correctAnswer: 2,
                   explanation: '1 kg = 1,000 g, so 2.5 kg = 2.5 × 1,000 = 2,500 g',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['mass-conversion'],
+                    correctToken: 'mass-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Multiplied by 10
+                      'conversion-factor-error',          // Multiplied by 100
+                      null,                                // Correct
+                      'conversion-factor-error',          // Multiplied by 10,000
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMMG195-005',
+                  id: 'VCMMG195-016',
+                  question: 'Convert 3,750 grams to kilograms.',
+                  options: ['0.375 kg', '3.75 kg', '37.5 kg', '375 kg'],
+                  correctAnswer: 1,
+                  explanation: '1 kg = 1,000 g, so 3,750 g ÷ 1,000 = 3.75 kg',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['mass-conversion'],
+                    correctToken: 'mass-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Divided by 10,000
+                      null,                                // Correct
+                      'conversion-factor-error',          // Divided by 100
+                      'conversion-direction-error',       // Multiplied
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-017',
+                  question: 'A truck can carry 2.5 tonnes. How many kilograms is this?',
+                  options: ['25 kg', '250 kg', '2,500 kg', '25,000 kg'],
+                  correctAnswer: 2,
+                  explanation: '1 tonne = 1,000 kg, so 2.5 t = 2.5 × 1,000 = 2,500 kg',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['mass-conversion'],
+                    correctToken: 'mass-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Multiplied by 10
+                      'conversion-factor-error',          // Multiplied by 100
+                      null,                                // Correct
+                      'conversion-factor-error',          // Multiplied by 10,000
+                    ],
+                  },
+                },
+                // Questions 18-20: Capacity Conversions and Volume-Capacity
+                {
+                  id: 'VCMMG195-018',
                   question: 'Which measurement is the same as 4,500 mL?',
                   options: ['0.45 L', '4.5 L', '45 L', '450 L'],
                   correctAnswer: 1,
                   explanation: '1,000 mL = 1 L, so 4,500 mL = 4.5 L',
-                  difficulty: 3
-                }
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['capacity-conversion'],
+                    correctToken: 'capacity-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Divided by 10,000
+                      null,                                // Correct
+                      'conversion-factor-error',          // Divided by 100
+                      'conversion-direction-error',       // Wrong direction
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-019',
+                  question: 'A water bottle holds 1.5 L. How many millilitres is this?',
+                  options: ['15 mL', '150 mL', '1,500 mL', '15,000 mL'],
+                  correctAnswer: 2,
+                  explanation: '1 L = 1,000 mL, so 1.5 L = 1.5 × 1,000 = 1,500 mL',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['capacity-conversion'],
+                    correctToken: 'capacity-conversion',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Multiplied by 10
+                      'conversion-factor-error',          // Multiplied by 100
+                      null,                                // Correct
+                      'conversion-factor-error',          // Multiplied by 10,000
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG195-020',
+                  question: 'A container has a volume of 2,000 cm³. What is its capacity in litres?',
+                  options: ['0.2 L', '2 L', '20 L', '200 L'],
+                  correctAnswer: 1,
+                  explanation: '1,000 cm³ = 1 L, so 2,000 cm³ = 2 L. Volume in cm³ equals capacity in mL.',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['volume-capacity-connection', 'capacity-conversion'],
+                    correctToken: 'volume-capacity-connection',
+                    incorrectTokens: [
+                      'conversion-factor-error',          // Divided by 10,000
+                      null,                                // Correct
+                      'conversion-factor-error',          // Divided by 100
+                      'conversion-direction-error',       // Wrong direction
+                    ],
+                  },
+                },
               ]
             },
             {
