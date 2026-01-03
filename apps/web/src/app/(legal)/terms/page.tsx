@@ -144,7 +144,6 @@ export default function TermsPage() {
               <p><strong>SOFTSYS PTY LTD</strong></p>
               <p>Trading as Enhanced Software Systems</p>
               <p>ABN: 64 663 472 759</p>
-              <p>17 Koomba Crescent, Greenvale VIC 3059, Australia</p>
               <p>Email: <a href="mailto:tendai@agentsform.ai" className="text-black underline">tendai@agentsform.ai</a></p>
               <p>Phone: <a href="tel:+61410386167" className="text-black underline">+61 410 386 167</a></p>
             </div>

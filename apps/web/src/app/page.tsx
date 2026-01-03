@@ -343,8 +343,8 @@ export default function Home() {
                 </a>
               </div>
               <div>
-                <p className="font-medium text-black mb-1">Address</p>
-                <p>17 Koomba Crescent<br />Greenvale VIC 3059<br />Australia</p>
+                <p className="font-medium text-black mb-1">Location</p>
+                <p>Melbourne, Australia</p>
               </div>
             </div>
           </div>

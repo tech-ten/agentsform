@@ -70,11 +70,9 @@ export default function ContactPage() {
               </div>
             </div>
             <div>
-              <h3 className="font-medium mb-2">Postal Address</h3>
+              <h3 className="font-medium mb-2">Location</h3>
               <div className="text-neutral-600 space-y-1">
-                <p>17 Koomba Crescent</p>
-                <p>Greenvale VIC 3059</p>
-                <p>Australia</p>
+                <p>Melbourne, Australia</p>
               </div>
             </div>
           </div>

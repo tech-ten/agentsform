@@ -150,7 +150,6 @@ export default function PrivacyPage() {
             <div className="text-neutral-600 space-y-1">
               <p><strong>Privacy Officer</strong></p>
               <p>SOFTSYS PTY LTD</p>
-              <p>17 Koomba Crescent, Greenvale VIC 3059, Australia</p>
               <p>Email: <a href="mailto:tendai@agentsform.ai" className="text-black underline">tendai@agentsform.ai</a></p>
               <p>Phone: <a href="tel:+61410386167" className="text-black underline">+61 410 386 167</a></p>
             </div>
