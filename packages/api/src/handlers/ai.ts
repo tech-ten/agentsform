@@ -82,6 +82,12 @@ const RATE_LIMITS: Record<string, number> = {
   premium: 1000,
 };
 
+// Get approximate age from Australian year level for safety prompts
+function getAgeFromYearLevel(yearLevel: number): number {
+  // Prep = 5, Year 1 = 6, Year 2 = 7, etc.
+  return yearLevel + 5;
+}
+
 // Log AI interaction
 async function logAIInteraction(log: AIInteractionLog): Promise<void> {
   await db.send(new PutCommand({
@@ -162,8 +168,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
         return badRequest('question, userAnswer, and correctAnswer are required');
       }
 
-      // Build context-aware system prompt
-      const systemPrompt = `You are a friendly, encouraging tutor for Australian Year ${yearLevel || 5} students.
+      // Build context-aware system prompt with age-appropriate safety
+      const age = getAgeFromYearLevel(yearLevel || 5);
+      const systemPrompt = `Safe for ${age}yo. You are a friendly, encouraging tutor for Australian Year ${yearLevel || 5} students.
 Your role is to help students understand their mistakes without being condescending.
 Use Australian English spelling (e.g., colour, favourite, maths).
 Keep explanations clear and age-appropriate.`;
@@ -285,7 +292,8 @@ Keep it to 2-3 short paragraphs. Be encouraging!`;
         return badRequest('message is required');
       }
 
-      const systemPrompt = `You are a friendly, patient AI tutor for Australian students.
+      const chatAge = getAgeFromYearLevel(yearLevel || 5);
+      const systemPrompt = `Safe for ${chatAge}yo. You are a friendly, patient AI tutor for Australian students.
 You're currently helping a Year ${yearLevel || 5} student with ${subject || 'their studies'}.
 
 Guidelines:
