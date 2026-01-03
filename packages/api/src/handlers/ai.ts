@@ -82,10 +82,11 @@ const RATE_LIMITS: Record<string, number> = {
   premium: 1000,
 };
 
-// Get approximate age from Australian year level for safety prompts
+// Get age for safety prompts with buffer to avoid overly simple responses
+const AGE_BUFFER = 2; // Adjust if responses are too simple/complex
 function getAgeFromYearLevel(yearLevel: number): number {
-  // Prep = 5, Year 1 = 6, Year 2 = 7, etc.
-  return yearLevel + 5;
+  // Prep = 5, Year 1 = 6, etc. + buffer for less restrictive responses
+  return yearLevel + 5 + AGE_BUFFER;
 }
 
 // Log AI interaction
