@@ -430,7 +430,8 @@ export interface ChildLoginResponse {
 
 export interface ChildLoginRequest {
   childId?: string;
-  username?: string;
+  parentEmail?: string;
+  childName?: string;
   pin: string;
 }
 

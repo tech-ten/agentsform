@@ -12,49 +12,60 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     const path = event.rawPath;
 
     // POST /children/login - Child PIN login (no auth required for this specific endpoint)
-    // Supports both username+PIN and childId+PIN login
+    // Requires parentEmail + childName + PIN to scope children to their family
     if (method === 'POST' && path === '/children/login') {
       const body = JSON.parse(event.body || '{}');
-      const { childId: loginChildId, username, pin } = body;
+      const { childId: loginChildId, parentEmail, childName, pin } = body;
 
       if (!pin) {
         return badRequest('PIN is required');
       }
 
-      if (!loginChildId && !username) {
-        return badRequest('Either childId or username is required');
-      }
-
       let childProfile: any = null;
       let parentId: string;
 
-      // Login by username (child-friendly)
-      if (username) {
-        // Query by username using GSI
-        const usernameResult = await db.send(new QueryCommand({
+      // Login by parentEmail + childName (primary method)
+      if (parentEmail && childName) {
+        // First, find the parent by email using Cognito sub stored in USER record
+        // We need to query by email - check if parent exists
+        const emailResult = await db.send(new QueryCommand({
           TableName: TABLE_NAME,
-          IndexName: 'username-index',
-          KeyConditionExpression: 'username = :username',
+          IndexName: 'email-index',
+          KeyConditionExpression: 'email = :email',
           ExpressionAttributeValues: {
-            ':username': username.toLowerCase().trim(),
+            ':email': parentEmail.toLowerCase().trim(),
           },
         }));
 
-        if (!usernameResult.Items || usernameResult.Items.length === 0) {
-          return notFound('Username not found. Check your spelling!');
+        if (!emailResult.Items || emailResult.Items.length === 0) {
+          return notFound('Parent email not found. Check the email address.');
         }
 
-        // Find the PROFILE record (has parentId) - GSI may return both CHILD and PROFILE records
-        childProfile = usernameResult.Items.find(item => item.parentId) || usernameResult.Items[0];
+        // Get the parent's userId from the USER record
+        const userRecord = emailResult.Items[0];
+        parentId = userRecord.PK.replace('USER#', '');
 
-        // If childProfile doesn't have parentId, it's the CHILD record - extract parentId from PK
-        if (!childProfile.parentId && childProfile.PK?.startsWith('USER#')) {
-          parentId = childProfile.PK.replace('USER#', '');
-        } else {
-          parentId = childProfile.parentId;
+        // Now find the child by name under this parent
+        const childrenResult = await db.send(new QueryCommand({
+          TableName: TABLE_NAME,
+          KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+          ExpressionAttributeValues: {
+            ':pk': `USER#${parentId}`,
+            ':sk': 'CHILD#',
+          },
+        }));
+
+        // Find child with matching name (case-insensitive)
+        const normalizedChildName = childName.toLowerCase().trim();
+        childProfile = childrenResult.Items?.find(
+          item => item.name.toLowerCase() === normalizedChildName
+        );
+
+        if (!childProfile) {
+          return notFound('Child not found. Check the name spelling.');
         }
-      } else {
-        // Login by childId (legacy/QR code flow)
+      } else if (loginChildId) {
+        // Login by childId (QR code / direct link flow)
         const profileResult = await db.send(new GetCommand({
           TableName: TABLE_NAME,
           Key: keys.childProfile(loginChildId),
@@ -66,6 +77,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
         childProfile = profileResult.Item;
         parentId = profileResult.Item.parentId;
+      } else {
+        return badRequest('Parent email and child name are required');
       }
 
       // Get full child record with PIN

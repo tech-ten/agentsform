@@ -193,7 +193,7 @@ interface UserProfile {
 
 ### Child (Sub-User)
 - Created by parent
-- Logs in with 4-digit PIN
+- Logs in with parent email + child name + PIN (family-scoped login)
 - Uses learning features
 - No direct account management
 
@@ -221,12 +221,37 @@ const CHILD_KEY = 'studymate_child'
 | `getAuthToken()` | Get current access token | `lib/auth.ts` |
 
 ### Child Authentication
+
+Child login is family-scoped using parent email + child name + PIN to prevent username collisions across families:
+
 ```typescript
-// Child login uses PIN stored in DynamoDB
-POST /children/verify-pin
+// Child login uses parent email to scope to family
+POST /children/login
+Body: {
+  parentEmail: string,  // Parent's email address
+  childName: string,    // Child's name (case-insensitive)
+  pin: string           // 4-6 digit PIN
+}
+Response: {
+  id: string,
+  name: string,
+  yearLevel: number,
+  avatar: string,
+  username: string,
+  parentId: string
+}
+
+// Alternative: Direct login via QR code / deep link
+POST /children/login
 Body: { childId: string, pin: string }
-Response: { valid: boolean, child: Child }
 ```
+
+**Login Flow (3 steps):**
+1. Enter parent's email address
+2. Enter child's name (as registered by parent)
+3. Enter PIN
+
+This prevents the scenario where two children named "Thomas" from different families could log in as each other.
 
 ---
 
@@ -453,13 +478,17 @@ This is the optimized conversion funnel that captures email first, then guides u
                                       │
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ STEP 2: Child PIN Entry                                                     │
-│ Page: /child-login?child={childId}                                           │
-│ Display: Child avatar and name, PIN entry pad                               │
-│ Action: Enter 4-digit PIN                                                   │
-│ API: verifyChildPin() → Validate PIN                                        │
-│ Store: setSelectedChild(childId) in localStorage                            │
-│ Destination: /curriculum                                                    │
+│ STEP 2: Child Login (3-Step Flow)                                           │
+│ Page: /child-login                                                           │
+│ Display: 3-step login form:                                                  │
+│   Step 1: Enter parent's email address                                      │
+│   Step 2: Enter child's name                                                │
+│   Step 3: Enter PIN using number pad                                        │
+│ API: childLogin({ parentEmail, childName, pin }) → Get child profile        │
+│ Store: setChildProfile(child) in localStorage                               │
+│ Destination: /learn                                                         │
+│                                                                             │
+│ Note: If accessed via /child-login?child={childId}, skips to PIN step      │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
@@ -736,9 +765,10 @@ npx cdk deploy AgentsFormApiStack
 |----------|--------|------|-------------|
 | `/children` | GET | Yes | List all children |
 | `/children` | POST | Yes | Create child |
+| `/children/{id}` | GET | Yes | Get child details |
 | `/children/{id}` | PUT | Yes | Update child |
 | `/children/{id}` | DELETE | Yes | Delete child |
-| `/children/verify-pin` | POST | Yes | Verify child PIN |
+| `/children/login` | POST | No | Child login (parentEmail + childName + PIN or childId + PIN) |
 
 ---
 
@@ -851,6 +881,17 @@ When modifying user management features:
 
 ## Changelog
 
+### Version 1.2 (January 4, 2026)
+- **Family-Scoped Child Login**: Changed child authentication from username-only to parent email + child name + PIN
+  - Prevents username collisions across families (e.g., two "Thomas" children from different families)
+  - Added `email-index` GSI to DynamoDB for efficient parent email lookups
+  - Updated `/children/login` endpoint to accept `parentEmail` + `childName` + `pin`
+  - QR code / deep link flow (`childId` + `pin`) still works for direct links
+  - Updated child-login page with 3-step flow: Email → Name → PIN
+- **Year 5 Curriculum Fallback**: Curriculum API now falls back to Year 5 content when requested year level has no data
+  - Ensures all year levels have learning content while curriculum is being developed
+  - Returns `effectiveYearLevel` and `requestedYearLevel` in response
+
 ### Version 1.1 (January 3, 2026)
 - **Netflix-Style Signup Funnel**: Implemented email-first capture flow
   - New `/get-started` page for email capture
@@ -876,5 +917,5 @@ When modifying user management features:
 
 ---
 
-*Last Updated: January 3, 2026*
-*Version: 1.1*
+*Last Updated: January 4, 2026*
+*Version: 1.2*

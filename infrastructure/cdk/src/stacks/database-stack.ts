@@ -41,6 +41,13 @@ export class DatabaseStack extends cdk.Stack {
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
+    // GSI for parent email lookups (child login by parent email)
+    this.table.addGlobalSecondaryIndex({
+      indexName: 'email-index',
+      partitionKey: { name: 'email', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+
     // Output table ARN for cross-stack reference
     new cdk.CfnOutput(this, 'TableArn', {
       value: this.table.tableArn,
