@@ -234,9 +234,18 @@ export default function LearnPage() {
       const response = await getProgress(id)
       const mathsProgress = response.progress.find(p => p.subject === 'maths')
       if (mathsProgress) {
+        // Check if benchmark is completed - redirect to benchmark if not
+        if (!mathsProgress.benchmarkCompleted) {
+          router.push('/benchmark?subject=maths')
+          return
+        }
         setCurrentLevel(mathsProgress.level)
         setTotalXp(mathsProgress.xp)
         setStreak(mathsProgress.streak)
+      } else {
+        // No progress record means benchmark hasn't been done
+        router.push('/benchmark?subject=maths')
+        return
       }
     } catch (err) {
       console.error('Failed to load progress:', err)
