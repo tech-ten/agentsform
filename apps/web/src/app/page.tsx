@@ -156,12 +156,22 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {/* Free */}
-            <div className="border border-neutral-200 rounded-2xl p-8">
+            <div className="border border-neutral-200 rounded-2xl p-8 relative">
+              <div className="absolute -top-3 left-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium animate-pulse">
+                Limited time only
+              </div>
               <h3 className="text-lg font-semibold mb-1">Explorer</h3>
-              <p className="text-sm text-neutral-500 mb-6">For trying things out</p>
+              <p className="text-sm text-neutral-500 mb-6">
+                Free for a limited time
+                <span className="block text-amber-600 font-medium mt-1">
+                  Lock in your free access now!
+                </span>
+              </p>
               <div className="mb-6">
-                <span className="text-4xl font-semibold">$0</span>
-                <span className="text-neutral-500">/month</span>
+                <span className="text-4xl font-semibold text-green-600">FREE</span>
+                <span className="text-neutral-500 block text-sm mt-1">
+                  for 21 days, then $0.99/month
+                </span>
               </div>
               <ul className="space-y-3 mb-8 text-sm">
                 <li className="flex items-center gap-3">
@@ -178,12 +188,12 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
-                  Progress tracking
+                  Basic progress tracking
                 </li>
               </ul>
               <Link href="/register" className="block">
-                <Button variant="outline" className="w-full rounded-full">
-                  Get started
+                <Button variant="outline" className="w-full rounded-full bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 hover:from-amber-100 hover:to-orange-100">
+                  Get Started Free
                 </Button>
               </Link>
             </div>
@@ -198,6 +208,9 @@ export default function Home() {
               <div className="mb-6">
                 <span className="text-4xl font-semibold">$5</span>
                 <span className="text-neutral-500">/month</span>
+                <span className="text-green-600 block text-sm mt-1 font-medium">
+                  14-day free trial
+                </span>
               </div>
               <ul className="space-y-3 mb-8 text-sm">
                 <li className="flex items-center gap-3">
@@ -210,15 +223,15 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
-                  Unlimited AI explanations
+                  Unlimited AI tutor help
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
-                  All subjects
+                  Weekly progress reports
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
-                  Ad-free experience
+                  Concept mastery tracking
                 </li>
               </ul>
               <Link href="/register?plan=scholar" className="block">
@@ -235,6 +248,9 @@ export default function Home() {
               <div className="mb-6">
                 <span className="text-4xl font-semibold">$12</span>
                 <span className="text-neutral-500">/month</span>
+                <span className="text-green-600 block text-sm mt-1 font-medium">
+                  14-day free trial
+                </span>
               </div>
               <ul className="space-y-3 mb-8 text-sm">
                 <li className="flex items-center gap-3">
@@ -247,11 +263,11 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
-                  Term reports (PDF)
+                  Detailed PDF reports
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
-                  Curriculum mapping
+                  Curriculum alignment insights
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-1 h-1 bg-black rounded-full" />
