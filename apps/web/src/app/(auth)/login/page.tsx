@@ -97,7 +97,13 @@ function LoginForm() {
 
         <p className="mt-8 text-center text-sm text-neutral-500">
           Don't have an account?{' '}
-          <Link href="/register" className="text-black font-medium hover:underline">
+          <Link
+            href={redirect?.includes('plan=')
+              ? `/register?plan=${redirect.match(/plan=(\w+)/)?.[1] || 'scholar'}`
+              : '/register?plan=scholar'
+            }
+            className="text-black font-medium hover:underline"
+          >
             Sign up
           </Link>
         </p>

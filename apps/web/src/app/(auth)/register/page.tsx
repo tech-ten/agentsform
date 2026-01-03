@@ -9,7 +9,7 @@ import { signUp } from '@/lib/auth'
 function RegisterForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const plan = searchParams.get('plan') || 'free'
+  const plan = searchParams.get('plan') || 'scholar'
 
   const [formData, setFormData] = useState({
     name: '',
@@ -50,7 +50,7 @@ function RegisterForm() {
   }
 
   const planNames: Record<string, string> = {
-    free: 'Explorer',
+    explorer: 'Explorer',
     scholar: 'Scholar',
     achiever: 'Achiever',
   }
