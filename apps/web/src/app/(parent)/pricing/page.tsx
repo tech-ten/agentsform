@@ -17,7 +17,10 @@ const plans = [
     id: 'free',
     name: 'Explorer',
     price: 0,
-    description: 'For trying things out',
+    futurePrice: 0.99,
+    trialDays: 21,
+    description: 'Free for a limited time',
+    limitedTime: true,
     features: [
       '2 child profiles',
       '20 questions per day',
@@ -248,6 +251,11 @@ function PricingContent() {
                         Most popular
                       </div>
                     )}
+                    {'limitedTime' in plan && plan.limitedTime && !isCurrentPlan && (
+                      <div className="absolute -top-3 left-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium animate-pulse">
+                        Limited time only
+                      </div>
+                    )}
                     {isCurrentPlan && (
                       <div className="absolute -top-3 right-6 bg-green-500 text-white text-xs px-3 py-1 rounded-full">
                         Current plan
@@ -255,11 +263,29 @@ function PricingContent() {
                     )}
 
                     <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
-                    <p className="text-sm text-neutral-500 mb-6">{plan.description}</p>
+                    <p className="text-sm text-neutral-500 mb-6">
+                      {plan.description}
+                      {'limitedTime' in plan && plan.limitedTime && (
+                        <span className="block text-amber-600 font-medium mt-1">
+                          Lock in your free access now!
+                        </span>
+                      )}
+                    </p>
 
                     <div className="mb-6">
-                      <span className="text-4xl font-semibold">${plan.price}</span>
-                      <span className="text-neutral-500">/month</span>
+                      {'futurePrice' in plan && plan.futurePrice ? (
+                        <>
+                          <span className="text-4xl font-semibold text-green-600">FREE</span>
+                          <span className="text-neutral-500 block text-sm mt-1">
+                            for {plan.trialDays} days, then ${plan.futurePrice}/month
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-4xl font-semibold">${plan.price}</span>
+                          <span className="text-neutral-500">/month</span>
+                        </>
+                      )}
                     </div>
 
                     <ul className="space-y-3 mb-8 text-sm">
@@ -290,10 +316,10 @@ function PricingContent() {
                     ) : plan.id === 'free' ? (
                       <Button
                         variant="outline"
-                        className="w-full rounded-full"
+                        className="w-full rounded-full bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 hover:from-amber-100 hover:to-orange-100"
                         disabled
                       >
-                        Free Forever
+                        Get Started Free
                       </Button>
                     ) : (
                       <Button
