@@ -4232,47 +4232,421 @@ So a container 10cm × 10cm × 10cm:
                   explanation: 'Volume = 30×20×25 = 15,000 cm³ = 15 L'
                 }
               ],
+              knowledgeTokens: [
+                {
+                  id: 'perimeter-concept',
+                  name: 'Perimeter Concept',
+                  description: 'Understanding perimeter as the distance around a shape',
+                  prerequisites: [],
+                },
+                {
+                  id: 'rectangle-perimeter-formula',
+                  name: 'Rectangle Perimeter Formula',
+                  description: 'Using P = 2(l + w) or P = 2l + 2w for rectangles',
+                  prerequisites: ['perimeter-concept'],
+                },
+                {
+                  id: 'area-concept',
+                  name: 'Area Concept',
+                  description: 'Understanding area as the space inside a 2D shape',
+                  prerequisites: [],
+                },
+                {
+                  id: 'rectangle-area-formula',
+                  name: 'Rectangle Area Formula',
+                  description: 'Using A = l × w for rectangles',
+                  prerequisites: ['area-concept'],
+                },
+                {
+                  id: 'volume-concept',
+                  name: 'Volume Concept',
+                  description: 'Understanding volume as the space inside a 3D shape',
+                  prerequisites: [],
+                },
+                {
+                  id: 'rectangular-prism-volume',
+                  name: 'Rectangular Prism Volume',
+                  description: 'Using V = l × w × h for rectangular prisms',
+                  prerequisites: ['volume-concept'],
+                },
+                {
+                  id: 'volume-to-capacity',
+                  name: 'Volume to Capacity Conversion',
+                  description: 'Converting cm³ to mL and L (1 cm³ = 1 mL)',
+                  prerequisites: ['rectangular-prism-volume'],
+                },
+                {
+                  id: 'missing-dimension',
+                  name: 'Finding Missing Dimensions',
+                  description: 'Working backwards from perimeter, area or volume to find a missing side',
+                  prerequisites: ['rectangle-perimeter-formula', 'rectangle-area-formula'],
+                },
+              ],
               questions: [
+                // Questions 1-5: Perimeter
                 {
                   id: 'VCMMG196-001',
                   question: 'What is the perimeter of a rectangle with length 9m and width 4m?',
                   options: ['13 m', '26 m', '36 m', '52 m'],
                   correctAnswer: 1,
                   explanation: 'Perimeter = 2 × (9 + 4) = 2 × 13 = 26 m',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['rectangle-perimeter-formula'],
+                    correctToken: 'rectangle-perimeter-formula',
+                    incorrectTokens: [
+                      'perimeter-area-confusion',         // Just added l + w
+                      null,                                // Correct
+                      'perimeter-area-confusion',         // Calculated area
+                      'perimeter-calculation-error',      // Doubled twice
+                    ],
+                  },
                 },
                 {
                   id: 'VCMMG196-002',
+                  question: 'A square has sides of 7 cm. What is its perimeter?',
+                  options: ['14 cm', '21 cm', '28 cm', '49 cm'],
+                  correctAnswer: 2,
+                  explanation: 'A square has 4 equal sides, so perimeter = 4 × 7 = 28 cm',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['perimeter-concept'],
+                    correctToken: 'perimeter-concept',
+                    incorrectTokens: [
+                      'perimeter-calculation-error',      // Only 2 sides
+                      'perimeter-calculation-error',      // Only 3 sides
+                      null,                                // Correct
+                      'perimeter-area-confusion',         // Calculated area
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-003',
+                  question: 'A rectangular field is 25m long and 12m wide. What is the perimeter?',
+                  options: ['37 m', '74 m', '300 m', '50 m'],
+                  correctAnswer: 1,
+                  explanation: 'Perimeter = 2 × (25 + 12) = 2 × 37 = 74 m',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['rectangle-perimeter-formula'],
+                    correctToken: 'rectangle-perimeter-formula',
+                    incorrectTokens: [
+                      'perimeter-area-confusion',         // Just added l + w
+                      null,                                // Correct
+                      'perimeter-area-confusion',         // Calculated area
+                      'perimeter-calculation-error',      // Only doubled length
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-004',
+                  question: 'A rectangle has a perimeter of 36 cm. If the length is 11 cm, what is the width?',
+                  options: ['5 cm', '7 cm', '14 cm', '25 cm'],
+                  correctAnswer: 1,
+                  explanation: '2(l + w) = 36, so l + w = 18. If l = 11, then w = 18 - 11 = 7 cm',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangle-perimeter-formula', 'missing-dimension'],
+                    correctToken: 'missing-dimension',
+                    incorrectTokens: [
+                      'missing-dimension-error',          // Wrong calculation
+                      null,                                // Correct
+                      'perimeter-formula-reversal',       // 36/2 - 11 wrong step
+                      'missing-dimension-error',          // Subtracted from 36 directly
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-005',
+                  question: 'A picture frame has a perimeter of 120 cm. If it is a square, what is the length of each side?',
+                  options: ['20 cm', '30 cm', '40 cm', '60 cm'],
+                  correctAnswer: 1,
+                  explanation: 'For a square, perimeter = 4 × side. So side = 120 ÷ 4 = 30 cm',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['perimeter-concept', 'missing-dimension'],
+                    correctToken: 'missing-dimension',
+                    incorrectTokens: [
+                      'missing-dimension-error',          // Divided by wrong number
+                      null,                                // Correct
+                      'missing-dimension-error',          // Divided by 3
+                      'missing-dimension-error',          // Divided by 2
+                    ],
+                  },
+                },
+                // Questions 6-10: Area
+                {
+                  id: 'VCMMG196-006',
                   question: 'A garden is 15m long and 8m wide. What is its area?',
                   options: ['23 m²', '46 m²', '120 m²', '240 m²'],
                   correctAnswer: 2,
                   explanation: 'Area = length × width = 15 × 8 = 120 m²',
-                  difficulty: 1
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['rectangle-area-formula'],
+                    correctToken: 'rectangle-area-formula',
+                    incorrectTokens: [
+                      'perimeter-area-confusion',         // Added instead of multiplied
+                      'perimeter-area-confusion',         // Calculated perimeter
+                      null,                                // Correct
+                      'area-calculation-error',           // Doubled the result
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMMG196-003',
-                  question: 'A box is 6cm × 4cm × 5cm. What is its volume?',
-                  options: ['15 cm³', '60 cm³', '120 cm³', '240 cm³'],
+                  id: 'VCMMG196-007',
+                  question: 'A square playground has sides of 20 m. What is its area?',
+                  options: ['40 m²', '80 m²', '400 m²', '800 m²'],
                   correctAnswer: 2,
-                  explanation: 'Volume = 6 × 4 × 5 = 120 cm³',
-                  difficulty: 2
+                  explanation: 'Area of square = side × side = 20 × 20 = 400 m²',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['area-concept', 'rectangle-area-formula'],
+                    correctToken: 'rectangle-area-formula',
+                    incorrectTokens: [
+                      'perimeter-area-confusion',         // 20 × 2
+                      'perimeter-area-confusion',         // 20 × 4
+                      null,                                // Correct
+                      'area-calculation-error',           // Doubled result
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMMG196-004',
+                  id: 'VCMMG196-008',
+                  question: 'A carpet is 4m by 3m. How many square metres is the carpet?',
+                  options: ['7 m²', '12 m²', '14 m²', '24 m²'],
+                  correctAnswer: 1,
+                  explanation: 'Area = 4 × 3 = 12 m²',
+                  difficulty: 1,
+                  knowledge: {
+                    questionTokens: ['rectangle-area-formula'],
+                    correctToken: 'rectangle-area-formula',
+                    incorrectTokens: [
+                      'perimeter-area-confusion',         // Added instead
+                      null,                                // Correct
+                      'perimeter-area-confusion',         // Calculated perimeter
+                      'area-calculation-error',           // Doubled result
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-009',
                   question: 'A rectangular pool has an area of 48 m². If it is 8m long, how wide is it?',
                   options: ['4 m', '5 m', '6 m', '7 m'],
                   correctAnswer: 2,
                   explanation: 'Area = length × width, so 48 = 8 × width. Width = 48 ÷ 8 = 6 m',
-                  difficulty: 2
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangle-area-formula', 'missing-dimension'],
+                    correctToken: 'missing-dimension',
+                    incorrectTokens: [
+                      'missing-dimension-error',          // Wrong division
+                      'missing-dimension-error',          // Wrong division
+                      null,                                // Correct
+                      'missing-dimension-error',          // Wrong division
+                    ],
+                  },
                 },
                 {
-                  id: 'VCMMG196-005',
+                  id: 'VCMMG196-010',
+                  question: 'A rectangular room has an area of 54 m² and is 9 m long. What is its width?',
+                  options: ['5 m', '6 m', '7 m', '45 m'],
+                  correctAnswer: 1,
+                  explanation: 'Width = Area ÷ Length = 54 ÷ 9 = 6 m',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangle-area-formula', 'missing-dimension'],
+                    correctToken: 'missing-dimension',
+                    incorrectTokens: [
+                      'missing-dimension-error',          // Wrong division
+                      null,                                // Correct
+                      'missing-dimension-error',          // Wrong division
+                      'missing-dimension-error',          // Subtracted instead
+                    ],
+                  },
+                },
+                // Questions 11-15: Volume
+                {
+                  id: 'VCMMG196-011',
+                  question: 'A box is 6cm × 4cm × 5cm. What is its volume?',
+                  options: ['15 cm³', '60 cm³', '120 cm³', '240 cm³'],
+                  correctAnswer: 2,
+                  explanation: 'Volume = 6 × 4 × 5 = 120 cm³',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume'],
+                    correctToken: 'rectangular-prism-volume',
+                    incorrectTokens: [
+                      'volume-calculation-error',         // Added instead
+                      'volume-calculation-error',         // Only multiplied 2 numbers
+                      null,                                // Correct
+                      'volume-calculation-error',         // Doubled result
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-012',
+                  question: 'A cube has sides of 5 cm. What is its volume?',
+                  options: ['15 cm³', '25 cm³', '125 cm³', '150 cm³'],
+                  correctAnswer: 2,
+                  explanation: 'Volume of cube = side × side × side = 5 × 5 × 5 = 125 cm³',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['volume-concept', 'rectangular-prism-volume'],
+                    correctToken: 'rectangular-prism-volume',
+                    incorrectTokens: [
+                      'volume-calculation-error',         // 5 × 3
+                      'volume-area-confusion',            // Only squared (5 × 5)
+                      null,                                // Correct
+                      'volume-calculation-error',         // Added perimeter concept
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-013',
+                  question: 'A storage box is 10 cm long, 8 cm wide and 6 cm high. What is its volume?',
+                  options: ['24 cm³', '80 cm³', '240 cm³', '480 cm³'],
+                  correctAnswer: 3,
+                  explanation: 'Volume = 10 × 8 × 6 = 480 cm³',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume'],
+                    correctToken: 'rectangular-prism-volume',
+                    incorrectTokens: [
+                      'volume-calculation-error',         // Added dimensions
+                      'volume-calculation-error',         // Only 2 dimensions
+                      'volume-calculation-error',         // Only 2 dimensions
+                      null,                                // Correct
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-014',
+                  question: 'A rectangular prism has a volume of 60 cm³. If its base is 5 cm by 4 cm, what is its height?',
+                  options: ['2 cm', '3 cm', '4 cm', '12 cm'],
+                  correctAnswer: 1,
+                  explanation: 'Volume = length × width × height. 60 = 5 × 4 × height = 20 × height. Height = 60 ÷ 20 = 3 cm',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume', 'missing-dimension'],
+                    correctToken: 'missing-dimension',
+                    incorrectTokens: [
+                      'missing-dimension-error',          // Wrong division
+                      null,                                // Correct
+                      'missing-dimension-error',          // Confused dimension
+                      'missing-dimension-error',          // 60 ÷ 5 only
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-015',
+                  question: 'A shipping container is 12 m long, 2 m wide, and 3 m high. What is its volume?',
+                  options: ['17 m³', '36 m³', '72 m³', '144 m³'],
+                  correctAnswer: 2,
+                  explanation: 'Volume = 12 × 2 × 3 = 72 m³',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume'],
+                    correctToken: 'rectangular-prism-volume',
+                    incorrectTokens: [
+                      'volume-calculation-error',         // Added dimensions
+                      'volume-calculation-error',         // Only 2 dimensions
+                      null,                                // Correct
+                      'volume-calculation-error',         // Doubled result
+                    ],
+                  },
+                },
+                // Questions 16-20: Volume and Capacity
+                {
+                  id: 'VCMMG196-016',
                   question: 'A container is 20cm × 15cm × 10cm. How many litres can it hold?',
                   options: ['3 L', '30 L', '300 L', '0.3 L'],
                   correctAnswer: 0,
                   explanation: 'Volume = 20 × 15 × 10 = 3,000 cm³ = 3 L (since 1,000 cm³ = 1 L)',
-                  difficulty: 3
-                }
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume', 'volume-to-capacity'],
+                    correctToken: 'volume-to-capacity',
+                    incorrectTokens: [
+                      null,                                // Correct
+                      'volume-capacity-conversion-error', // Didn't divide by 1000
+                      'volume-capacity-conversion-error', // Divided by 10
+                      'volume-capacity-conversion-error', // Divided by 10,000
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-017',
+                  question: 'A fish tank is 40 cm long, 25 cm wide, and 30 cm high. How many litres of water can it hold?',
+                  options: ['3 L', '30 L', '300 L', '3,000 L'],
+                  correctAnswer: 1,
+                  explanation: 'Volume = 40 × 25 × 30 = 30,000 cm³ = 30 L',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume', 'volume-to-capacity'],
+                    correctToken: 'volume-to-capacity',
+                    incorrectTokens: [
+                      'volume-capacity-conversion-error', // Divided by 10,000
+                      null,                                // Correct
+                      'volume-capacity-conversion-error', // Divided by 100
+                      'volume-capacity-conversion-error', // Didn't convert
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-018',
+                  question: 'A cube has sides of 10 cm. What is its capacity in litres?',
+                  options: ['0.1 L', '1 L', '10 L', '100 L'],
+                  correctAnswer: 1,
+                  explanation: 'Volume = 10 × 10 × 10 = 1,000 cm³ = 1 L',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume', 'volume-to-capacity'],
+                    correctToken: 'volume-to-capacity',
+                    incorrectTokens: [
+                      'volume-capacity-conversion-error', // Divided by 10,000
+                      null,                                // Correct
+                      'volume-capacity-conversion-error', // Divided by 100
+                      'volume-capacity-conversion-error', // Didn't divide
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-019',
+                  question: 'A water tank holds 8 litres. If it is 20 cm long and 10 cm wide, what is its height?',
+                  options: ['4 cm', '8 cm', '40 cm', '80 cm'],
+                  correctAnswer: 2,
+                  explanation: '8 L = 8,000 cm³. Volume = l × w × h, so 8,000 = 20 × 10 × h = 200 × h. Height = 8,000 ÷ 200 = 40 cm',
+                  difficulty: 3,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume', 'volume-to-capacity', 'missing-dimension'],
+                    correctToken: 'missing-dimension',
+                    incorrectTokens: [
+                      'volume-capacity-conversion-error', // Didn't convert L to cm³
+                      'missing-dimension-error',          // Wrong division
+                      null,                                // Correct
+                      'missing-dimension-error',          // Wrong calculation
+                    ],
+                  },
+                },
+                {
+                  id: 'VCMMG196-020',
+                  question: 'A rectangular juice box is 6 cm × 4 cm × 10 cm. How many millilitres of juice can it hold?',
+                  options: ['24 mL', '60 mL', '240 mL', '2,400 mL'],
+                  correctAnswer: 2,
+                  explanation: 'Volume = 6 × 4 × 10 = 240 cm³ = 240 mL (since 1 cm³ = 1 mL)',
+                  difficulty: 2,
+                  knowledge: {
+                    questionTokens: ['rectangular-prism-volume', 'volume-to-capacity'],
+                    correctToken: 'volume-to-capacity',
+                    incorrectTokens: [
+                      'volume-calculation-error',         // Only 2 dimensions
+                      'volume-calculation-error',         // Only 2 dimensions
+                      null,                                // Correct
+                      'volume-capacity-conversion-error', // Multiplied by 10
+                    ],
+                  },
+                },
               ]
             }
           ]
